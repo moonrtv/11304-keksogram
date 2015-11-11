@@ -4,7 +4,7 @@
 [![Dependency status][dependency-image]][dependency-url]
 
 * Студент: [Тарас Родионов](https://htmlacademy.ru/profile/id11304).
-* Наставник: `Unknown`.
+* Наставник: `Evgeniy Kuznetsov`.
 
 ### Немного о себе
 
