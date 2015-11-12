@@ -3,16 +3,16 @@
 [![Build status][travis-image]][travis-url]
 [![Dependency status][dependency-image]][dependency-url]
 
-* Студент: [Тарас Родионов](https://htmlacademy.ru/profile/id11304).
-* Наставник: `Unknown`.
+* Студент: [Taras Rodionov](https://htmlacademy.ru/profile/id11304).
+* Наставник: `Evgeniy Kuznetsov`.
 
 ### Немного о себе
 
 ##### Вы прошли интенсивный онлайн-курс «Базовый HTML и CSS»?
-`Да, успешно | Да, но не защитил проект | Нет, я сразу записался на базовый JS`.
+`Да, успешно`.
 
 ##### Вы прошли интенсивный онлайн-курс «Продвинутый HTML и CSS»?
-`Да, успешно | Да, но не защитил проект | Нет, я сразу записался на базовый JS`.
+`Нет, я сразу записался на базовый JS`.
 
 --
 
