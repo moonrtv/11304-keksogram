@@ -8,7 +8,7 @@ function getMessage(a, b) {
   }
 
   if (typeof a === "number")
-    return "Переданное SVG-изображение содержит ".concat(a, " объектов и ", b*4, " аттрибутов.");
+    return "Переданное SVG-изображение содержит " + a + " объектов и " + b*4 + " аттрибутов.";
 
   if (Array.isArray(a)) {
     if (Array.isArray(b)) {
