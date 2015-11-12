@@ -3,7 +3,7 @@
 [![Build status][travis-image]][travis-url]
 [![Dependency status][dependency-image]][dependency-url]
 
-* Студент: [Тарас Родионов](https://htmlacademy.ru/profile/id11304).
+* Студент: [Taras Rodionov](https://htmlacademy.ru/profile/id11304).
 * Наставник: `Evgeniy Kuznetsov`.
 
 ### Немного о себе
