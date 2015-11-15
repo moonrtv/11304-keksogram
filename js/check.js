@@ -9,12 +9,11 @@ function getMessage(a, b) {
     return 'Переданное SVG-изображение содержит ' + a + ' объектов и ' + b*4 + ' атрибутов.';
     } else if (Array.isArray(a)) {// end if SVG
         function addNumber(x, y){ return x + y; }
-        function multiplyNumber(x, y) { return x * y}
         if (Array.isArray(b)) {
           var square = 0;
 
           for (var i = 0; i < a.length; i++) {
-            square += multiplyNumber(a[i], b[i]);
+            square += a[i] * b[i];
           }
 
           return 'Количество красных точек во всех строчках изображения: ' + square + '.';
