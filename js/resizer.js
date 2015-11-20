@@ -112,7 +112,7 @@
       this._ctx.drawImage(this._image, displX, displY);
 
       // Сохраним значения
-      var  leftUpperCorner = (-this._resizeConstraint.side / 2) - this._ctx.lineWidth;
+      var leftUpperCorner = (-this._resizeConstraint.side / 2) - this._ctx.lineWidth;
 
       // Сделал задание с зигзагами, но не стал вставлять.
       // Так как не знаю, как сделать в таком случае тень.
@@ -130,14 +130,14 @@
       this._ctx.fillStyle = 'rgba(0, 0, 0, .8)';
       // Горизонталь
       this._ctx.fillRect(this._container.width, leftUpperCorner, -this._container.width * 2, leftUpperCorner);
-      this._ctx.fillRect(this._container.width, this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2 , -this._container.width * 2, this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2);
+      this._ctx.fillRect(this._container.width, this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2, -this._container.width * 2, this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2);
       // Вертикаль
       this._ctx.fillRect(leftUpperCorner, leftUpperCorner, -this._container.width, this._resizeConstraint.side + this._ctx.lineWidth / 2);
       this._ctx.fillRect(this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2, ((-this._resizeConstraint.side / 2) - this._ctx.lineWidth), this._container.width, this._resizeConstraint.side + this._ctx.lineWidth / 2);
 
       // Текст (заливка, курсив, кёрлинг, тип, координаты вывода)
-      this._ctx.fillStyle = "#fff";
-      this._ctx.font = "italic 12pt Arial";
+      this._ctx.fillStyle = '#fff';
+      this._ctx.font = 'italic 12pt Arial';
       var text = this._image.naturalWidth + ' x ' + this._image.naturalHeight;
       this._ctx.fillText(text, -40, ((-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2) - this._ctx.lineWidth * 2);
 
