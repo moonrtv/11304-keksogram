@@ -96,7 +96,22 @@
   /**
    * @type {HTMLImageElement}
    */
+  var filterInputs = document.querySelector('.upload-resize-controls');
+
+  /**
+   * @type {HTMLImageElement}
+   */
   var filterImage = filterForm.querySelector('.filter-image-preview');
+
+  /**
+   * @type {HTMLImageElement}
+   */
+  var buttonSubmit = document.querySelector('#resize-fwd');
+
+  /**
+   * @type {HTMLImageElement}
+   */
+  var showingTooltip;
 
   /**
    * @type {HTMLElement}
@@ -226,6 +241,88 @@
 
     filterForm.classList.add('invisible');
     uploadForm.classList.remove('invisible');
+  };
+
+  /**
+   * Создание и позицианирование сообщения.
+   */
+  function createInfoMessage(tooltip) {
+    var tooltipElem = document.createElement('div');
+    tooltipElem.className = 'tooltip';
+    tooltipElem.innerHTML = tooltip;
+    document.body.appendChild(tooltipElem);
+
+    var coords = filterInputs.getBoundingClientRect();
+
+    var left = coords.left + (filterInputs.offsetWidth - tooltipElem.offsetWidth) / 2;
+    if (left < 0) left = 0; // не вылезать за левую границу окна
+
+    var top = coords.top - tooltipElem.offsetHeight - 5;
+    if (top < 0) { // не вылезать за верхнюю границу окна
+      top = coords.top + filterInputs.offsetHeight + 5;
+    }
+
+    tooltipElem.style.left = left + 'px';
+    tooltipElem.style.top = top + 'px';
+
+    showingTooltip = tooltipElem;
+  };
+
+  /**
+   * Удаление сообщения.
+   */
+  function deleteInfoMessage() {
+    if (showingTooltip) {
+      document.body.removeChild(showingTooltip);
+      showingTooltip = null;
+    }
+  };
+
+  /**
+   * Генерация сообщений.
+   */
+  function generateBodyMessage(type) {
+    var infoMessage = '';
+
+    buttonSubmit.disabled = true;
+
+    switch (type) {
+      case 0:
+        buttonSubmit.disabled = false;
+        break;
+      case 1:
+        infoMessage = 'Сумма значений полей «слева» и «сторона» не должна быть больше ширины исходного изображения';
+        break;
+      case 2:
+        infoMessage = 'Сумма значений полей «сверху» и «сторона» не должна быть больше высоты исходного изображения';
+        break;
+      case 3:
+        infoMessage = 'Сторона не может быть отрицательной!';
+        break;
+    };
+
+    return infoMessage;
+  };
+
+  /**
+   * Проверка данных на валидность.
+  */
+  filterInputs.onchange = function() {
+    var type = 0,
+        leftInput = +document.getElementById('resize-x').value,
+        topInput = +document.getElementById('resize-y').value,
+        sideInput = +document.getElementById('resize-size').value;
+
+    if ((leftInput >= 0) && (topInput >= 0) && (sideInput >= 0)) {
+      ((leftInput + sideInput) >= currentResizer._image.naturalWidth) ?
+        type = 1 : ((topInput + sideInput) >= currentResizer._image.naturalHeight) ?
+        type = 2 : buttonSubmit.disabled = false;
+    } else type = 3;
+
+    var infoMassage = generateBodyMessage(type);
+    if (infoMassage) createInfoMessage(infoMassage);
+
+    setTimeout( deleteInfoMessage , 3000);
   };
 
   /**
