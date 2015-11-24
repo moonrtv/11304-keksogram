@@ -319,16 +319,18 @@
       if ((leftInput + sideInput) >= currentResizer._image.naturalWidth) {
         type = 1;
       } else if ((topInput + sideInput) >= currentResizer._image.naturalHeight) {
-          type = 2;
-        } else {
-          buttonSubmit.disabled = false;
-        }
+        type = 2;
+      } else {
+        buttonSubmit.disabled = false;
+      }
     } else {
       type = 3;
     }
 
     var infoMassage = generateBodyMessage(type);
-    if (infoMassage) createInfoMessage(infoMassage);
+    if (infoMassage) {
+      createInfoMessage(infoMassage);
+    }
 
     setTimeout(deleteInfoMessage, 3000);
   };
