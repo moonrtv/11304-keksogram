@@ -316,10 +316,16 @@
     var sideInput = +document.getElementById('resize-size').value;
 
     if ((leftInput >= 0) && (topInput >= 0) && (sideInput >= 0)) {
-      ((leftInput + sideInput) >= currentResizer._image.naturalWidth) ?
-        type = 1 : ((topInput + sideInput) >= currentResizer._image.naturalHeight) ?
-        type = 2 : buttonSubmit.disabled = false;
-    } else type = 3;
+      if ((leftInput + sideInput) >= currentResizer._image.naturalWidth) {
+        type = 1;
+      } else if ((topInput + sideInput) >= currentResizer._image.naturalHeight) {
+          type = 2;
+        } else {
+          buttonSubmit.disabled = false;
+        }
+    } else {
+      type = 3;
+    }
 
     var infoMassage = generateBodyMessage(type);
     if (infoMassage) createInfoMessage(infoMassage);
