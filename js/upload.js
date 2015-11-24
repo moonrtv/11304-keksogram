@@ -255,7 +255,9 @@
     var coords = filterInputs.getBoundingClientRect();
 
     var left = coords.left + (filterInputs.offsetWidth - tooltipElem.offsetWidth) / 2;
-    if (left < 0) left = 0; // не вылезать за левую границу окна
+    if (left < 0) { // не вылезать за левую границу окна
+      left = 0;
+    }
 
     var top = coords.top - tooltipElem.offsetHeight - 5;
     if (top < 0) { // не вылезать за верхнюю границу окна
@@ -266,7 +268,7 @@
     tooltipElem.style.top = top + 'px';
 
     showingTooltip = tooltipElem;
-  };
+  }
 
   /**
    * Удаление сообщения.
@@ -276,7 +278,7 @@
       document.body.removeChild(showingTooltip);
       showingTooltip = null;
     }
-  };
+  }
 
   /**
    * Генерация сообщений.
@@ -299,19 +301,19 @@
       case 3:
         infoMessage = 'Сторона не может быть отрицательной!';
         break;
-    };
+    }
 
     return infoMessage;
-  };
+  }
 
   /**
    * Проверка данных на валидность.
   */
   filterInputs.onchange = function() {
-    var type = 0,
-        leftInput = +document.getElementById('resize-x').value,
-        topInput = +document.getElementById('resize-y').value,
-        sideInput = +document.getElementById('resize-size').value;
+    var type = 0;
+    var leftInput = +document.getElementById('resize-x').value;
+    var topInput = +document.getElementById('resize-y').value;
+    var sideInput = +document.getElementById('resize-size').value;
 
     if ((leftInput >= 0) && (topInput >= 0) && (sideInput >= 0)) {
       ((leftInput + sideInput) >= currentResizer._image.naturalWidth) ?
@@ -322,7 +324,7 @@
     var infoMassage = generateBodyMessage(type);
     if (infoMassage) createInfoMessage(infoMassage);
 
-    setTimeout( deleteInfoMessage , 3000);
+    setTimeout(deleteInfoMessage, 3000);
   };
 
   /**
