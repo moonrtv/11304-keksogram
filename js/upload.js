@@ -106,6 +106,11 @@
   /**
    * @type {HTMLImageElement}
    */
+  var filterSubmit = document.querySelector('#filter-fwd');
+
+  /**
+   * @type {HTMLImageElement}
+   */
   var buttonSubmit = document.querySelector('#resize-fwd');
 
   /**
@@ -333,6 +338,18 @@
     }
 
     setTimeout(deleteInfoMessage, 3000);
+  };
+
+  /**
+   * Сохранение фильтра для картинки.
+   */
+  filterSubmit.onclick = function() {
+    var filterImg = document.querySelector('#upload-filter > img').classList[1];
+
+    // Установка cookie
+    var dateToExpire = +Date.now() + 65 * 24 * 60 * 60 * 1000;
+    var formatedDateToExpire = new Date(dateToExpire).toUTCString();
+    docCookies.setItem('filter', filterImg, formatedDateToExpire);
   };
 
   /**
