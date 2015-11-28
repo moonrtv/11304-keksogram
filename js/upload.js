@@ -8,6 +8,11 @@
 'use strict';
 
 (function() {
+  /** Const */
+  var ERR_MSG_LEFT = 'Сумма значений полей «слева» и «сторона» не должна быть больше ширины исходного изображения';
+  var ERR_MSG_TOP = 'Сумма значений полей «сверху» и «сторона» не должна быть больше высоты исходного изображения';
+  var ERR_MSG_NEGATIVE = 'Значение не может быть отрицательным!';
+
   /** @enum {string} */
   var FileType = {
     'GIF': '',
@@ -107,11 +112,6 @@
    * @type {HTMLImageElement}
    */
   var buttonSubmit = document.querySelector('#resize-fwd');
-
-  /**
-   * @type {HTMLImageElement}
-   */
-  var showingTooltip;
 
   /**
    * @type {HTMLElement}
@@ -247,92 +247,67 @@
    * Создание и позицианирование сообщения.
    */
   function createInfoMessage(tooltip) {
-    var tooltipElem = document.createElement('div');
-    tooltipElem.className = 'tooltip';
-    tooltipElem.innerHTML = tooltip;
-    document.body.appendChild(tooltipElem);
+    var showingTooltip = document.createElement('div');
+    showingTooltip.className = 'tooltip';
+    showingTooltip.innerHTML = tooltip;
+    document.body.appendChild(showingTooltip);
 
     var coords = filterInputs.getBoundingClientRect();
 
-    var left = coords.left + (filterInputs.offsetWidth - tooltipElem.offsetWidth) / 2;
-    if (left < 0) { // не вылезать за левую границу окна
-      left = 0;
-    }
+    var left = coords.left + (filterInputs.offsetWidth - showingTooltip.offsetWidth) / 2;
+    // не вылезать за левую границу окна
+    left = Math.max(left, 0);
 
-    var top = coords.top - tooltipElem.offsetHeight - 5;
-    if (top < 0) { // не вылезать за верхнюю границу окна
+    var top = coords.top - showingTooltip.offsetHeight - 5;
+    // не вылезать за верхнюю границу окна
+    if (top < 0) {
       top = coords.top + filterInputs.offsetHeight + 5;
     }
 
-    tooltipElem.style.left = left + 'px';
-    tooltipElem.style.top = top + 'px';
+    showingTooltip.style.left = left + 'px';
+    showingTooltip.style.top = top + 'px';
 
-    showingTooltip = tooltipElem;
+    return showingTooltip;
   }
 
   /**
    * Удаление сообщения.
    */
-  function deleteInfoMessage() {
-    if (showingTooltip) {
-      document.body.removeChild(showingTooltip);
-      showingTooltip = null;
-    }
-  }
+  function deleteInfoMessage(showingTooltip) {
+    setTimeout(function() {
+      if (showingTooltip) {
+        document.body.removeChild(showingTooltip);
+        showingTooltip = null;
+      }
+    }, 2000);
 
-  /**
-   * Генерация сообщений.
-   */
-  function generateBodyMessage(type) {
-    var infoMessage = '';
-
-    buttonSubmit.disabled = true;
-
-    switch (type) {
-      case 0:
-        buttonSubmit.disabled = false;
-        break;
-      case 1:
-        infoMessage = 'Сумма значений полей «слева» и «сторона» не должна быть больше ширины исходного изображения';
-        break;
-      case 2:
-        infoMessage = 'Сумма значений полей «сверху» и «сторона» не должна быть больше высоты исходного изображения';
-        break;
-      case 3:
-        infoMessage = 'Сторона не может быть отрицательной!';
-        break;
-    }
-
-    return infoMessage;
   }
 
   /**
    * Проверка данных на валидность.
   */
   filterInputs.onchange = function() {
-    var type = 0;
+    var Msg;
     var leftInput = +document.getElementById('resize-x').value;
     var topInput = +document.getElementById('resize-y').value;
     var sideInput = +document.getElementById('resize-size').value;
 
     if ((leftInput >= 0) && (topInput >= 0) && (sideInput >= 0)) {
-      if ((leftInput + sideInput) >= currentResizer._image.naturalWidth) {
-        type = 1;
-      } else if ((topInput + sideInput) >= currentResizer._image.naturalHeight) {
-        type = 2;
+      if ((leftInput + sideInput) > currentResizer._image.naturalWidth) {
+        buttonSubmit.disabled = true;
+        Msg = createInfoMessage(ERR_MSG_LEFT);
+      } else if ((topInput + sideInput) > currentResizer._image.naturalHeight) {
+        buttonSubmit.disabled = true;
+        Msg = createInfoMessage(ERR_MSG_TOP);
       } else {
         buttonSubmit.disabled = false;
       }
     } else {
-      type = 3;
+      buttonSubmit.disabled = true;
+      Msg = createInfoMessage(ERR_MSG_NEGATIVE);
     }
 
-    var infoMassage = generateBodyMessage(type);
-    if (infoMassage) {
-      createInfoMessage(infoMassage);
-    }
-
-    setTimeout(deleteInfoMessage, 3000);
+    deleteInfoMessage(Msg);
   };
 
   /**
