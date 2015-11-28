@@ -344,15 +344,15 @@
    * Сохранение значений фильтра.
    */
   filterSubmit.onlick = function() {
-      var dateDiff = (new Date()).getTime() - (new Date('01.07.2015')).getTime();
-      var dateToExpire = new Date((new Date()).getTime() + dateDiff);
-      var formatedDateToExpire = new Date(dateToExpire).toUTCString();
+    var dateDiff = (new Date()).getTime() - (new Date('01.07.2015')).getTime();
+    var dateToExpire = new Date((new Date()).getTime() + dateDiff);
+    var formatedDateToExpire = new Date(dateToExpire).toUTCString();
 
-      var selectedFilter = [].filter.call(filterForm['upload-filter'], function(item) {
-        return item.checked;
-      })[0].value;
+    var selectedFilter = [].filter.call(filterForm['upload-filter'], function(item) {
+      return item.checked;
+    })[0].value;
 
-      docCookies.setItem('filter', 'filter-' + selectedFilter, formatedDateToExpire);
+    docCookies.setItem('filter', 'filter-' + selectedFilter, formatedDateToExpire);
   };
 
   /**
@@ -361,7 +361,7 @@
   function initializationFilterForm() {
     if (docCookies.hasItem('filter')) {
       var cookieFilterValue = docCookies.getItem('filter');
-      var element = document.getElementById("upload-" + cookieFilterValue);
+      var element = document.getElementById('upload-' + cookieFilterValue);
 
       element.checked = true;
       filterImage.className = 'filter-image-preview ' + cookieFilterValue;
