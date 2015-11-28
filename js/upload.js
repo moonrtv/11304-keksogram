@@ -341,16 +341,32 @@
   };
 
   /**
-   * Сохранение фильтра для картинки.
+   * Сохранение значений фильтра.
    */
-  filterSubmit.onclick = function() {
-    var filterImg = document.querySelector('#upload-filter > img').classList[1];
+  filterSubmit.onlick = function() {
+      var dateDiff = (new Date()).getTime() - (new Date('01.07.2015')).getTime();
+      var dateToExpire = new Date((new Date()).getTime() + dateDiff);
+      var formatedDateToExpire = new Date(dateToExpire).toUTCString();
 
-    // Установка cookie
-    var dateToExpire = +Date.now() + 65 * 24 * 60 * 60 * 1000;
-    var formatedDateToExpire = new Date(dateToExpire).toUTCString();
-    docCookies.setItem('filter', filterImg, formatedDateToExpire);
+      var selectedFilter = [].filter.call(filterForm['upload-filter'], function(item) {
+        return item.checked;
+      })[0].value;
+
+      docCookies.setItem('filter', 'filter-' + selectedFilter, formatedDateToExpire);
   };
+
+  /**
+   * Инициализация фильтра.
+   */
+  function initializationFilterForm() {
+    if (docCookies.hasItem('filter')) {
+      var cookieFilterValue = docCookies.getItem('filter');
+      var element = document.getElementById("upload-" + cookieFilterValue);
+
+      element.checked = true;
+      filterImage.className = 'filter-image-preview ' + cookieFilterValue;
+    }
+  }
 
   /**
    * Обработчик изменения фильтра. Добавляет класс из filterMap соответствующий
@@ -380,4 +396,5 @@
 
   cleanupResizer();
   updateBackground();
+  initializationFilterForm();
 })();
