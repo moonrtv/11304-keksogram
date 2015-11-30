@@ -284,7 +284,7 @@
         document.body.removeChild(showingTooltip);
         showingTooltip = null;
       }
-    } catch(e) {
+    } catch (e) {
       console.log('Хьюстон! У нас проблемы!');
     }
   };
