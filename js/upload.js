@@ -111,11 +111,6 @@
   /**
    * @type {HTMLImageElement}
    */
-  var filterSubmit = document.querySelector('#filter-fwd');
-
-  /**
-   * @type {HTMLImageElement}
-   */
   var buttonSubmit = document.querySelector('#resize-fwd');
 
   /**
@@ -251,7 +246,12 @@
   /**
    * Создание и позицианирование сообщения.
    */
-  function createInfoMessage(tooltip) {
+  var showInfoMsg = function(tooltip) {
+    var checkMsg = document.querySelector('.tooltip');
+    if (checkMsg) {
+      removeInfoMsg(checkMsg);
+    }
+
     var showingTooltip = document.createElement('div');
     showingTooltip.className = 'tooltip';
     showingTooltip.innerHTML = tooltip;
@@ -273,20 +273,32 @@
     showingTooltip.style.top = top + 'px';
 
     return showingTooltip;
-  }
+  };
 
   /**
    * Удаление сообщения.
    */
-  function deleteInfoMessage(showingTooltip) {
-    setTimeout(function() {
+  var removeInfoMsg = function(showingTooltip) {
+    try {
       if (showingTooltip) {
         document.body.removeChild(showingTooltip);
         showingTooltip = null;
       }
-    }, 2000);
+    } catch(e) {
+      console.log('Хьюстон! У нас проблемы!');
+    }
+  };
 
-  }
+  /**
+   * Удаление сообщения по времени.
+   */
+  var removeInfoMsgTimeout = function(showingTooltip) {
+    setTimeout(function() {
+      if (showingTooltip) {
+        removeInfoMsg(showingTooltip);
+      }
+    }, 3000);
+  };
 
   /**
    * Проверка данных на валидность.
@@ -297,57 +309,51 @@
     var topInput = +document.getElementById('resize-y').value;
     var sideInput = +document.getElementById('resize-size').value;
 
+    var error = null;
     if ((leftInput >= 0) && (topInput >= 0) && (sideInput >= 0)) {
       if ((leftInput + sideInput) > currentResizer._image.naturalWidth) {
-        buttonSubmit.disabled = true;
-        Msg = createInfoMessage(ERR_MSG_LEFT);
+        error = ERR_MSG_LEFT;
       } else if ((topInput + sideInput) > currentResizer._image.naturalHeight) {
-        buttonSubmit.disabled = true;
-        Msg = createInfoMessage(ERR_MSG_TOP);
-      } else {
-        buttonSubmit.disabled = false;
+        error = ERR_MSG_TOP;
       }
     } else {
+      error = ERR_MSG_NEGATIVE;
+    }
+
+    if (error) {
       buttonSubmit.disabled = true;
-      Msg = createInfoMessage(ERR_MSG_NEGATIVE);
+      Msg = showInfoMsg(error);
+    } else {
+      buttonSubmit.disabled = false;
     }
 
-    deleteInfoMessage(Msg);
+    removeInfoMsgTimeout(Msg);
   };
 
-  /**
-   * Сохранение значений фильтра.
-   */
-  filterSubmit.onlick = function() {
-    var dateDiff = (new Date()).getTime() - (new Date('01.07.2015')).getTime();
-    var dateToExpire = new Date((new Date()).getTime() + dateDiff);
-    var formatedDateToExpire = new Date(dateToExpire).toUTCString();
+  var getDiffDate = function() {
+    // Текущие преобразования относительно моего дня рождения
+    var now = +Date.now(); // (new Date()).getTime() или +Date.now()
+    var myBithday = (new Date('01.07.' + (new Date()).getFullYear())).getTime();
+    var dateDiff = now - myBithday; // var dateDiff = Math.ads(now - myBithday); Хмм...
 
-    var selectedFilter = [].filter.call(filterForm['upload-filter'], function(item) {
-      return item.checked;
-    })[0].value;
-
-    docCookies.setItem('filter', 'filter-' + selectedFilter, formatedDateToExpire);
-  };
-
-  /**
-   * Инициализация фильтра.
-   */
-  function initializationFilterForm() {
-    if (docCookies.hasItem('filter')) {
-      var cookieFilterValue = docCookies.getItem('filter');
-      var element = document.getElementById('upload-' + cookieFilterValue);
-
-      element.checked = true;
-      filterImage.className = 'filter-image-preview ' + cookieFilterValue;
+    // Упсс! Даты совпали:) Даём один день на размышление;)
+    if (!dateDiff) {
+      dateDiff = 1;
+    } else if (dateDiff) {
+      dateDiff *= -1;
     }
-  }
+
+    // Вычисляем дату 'протухания' cookie
+    var dateToExpire = new Date(now + dateDiff);
+
+    return new Date(dateToExpire).toUTCString();
+  };
 
   /**
    * Обработчик изменения фильтра. Добавляет класс из filterMap соответствующий
    * выбранному значению в форме.
    */
-  filterForm.onchange = function() {
+  filterForm.onchange = function(init) {
     if (!filterMap) {
       // Ленивая инициализация. Объект не создается до тех пор, пока
       // не понадобится прочитать его в первый раз, а после этого запоминается
@@ -359,17 +365,33 @@
       };
     }
 
-    var selectedFilter = [].filter.call(filterForm['upload-filter'], function(item) {
-      return item.checked;
-    })[0].value;
+    // Существуют ли наши cookie
+    if (docCookies.hasItem('filter') && init === 1) {
+      var cookieFilterValue = docCookies.getItem('filter');
+      var element = document.getElementById('upload-' + cookieFilterValue);
+
+      element.checked = true;
+    } else {
+      var formatedDateToExpire = getDiffDate();
+
+      var selectedFilter = [].filter.call(filterForm['upload-filter'], function(item) {
+        return item.checked;
+      })[0].value;
+
+      docCookies.setItem('filter', 'filter-' + selectedFilter, formatedDateToExpire);
+    }
 
     // Класс перезаписывается, а не обновляется через classList потому что нужно
     // убрать предыдущий примененный класс. Для этого нужно или запоминать его
     // состояние или просто перезаписывать.
-    filterImage.className = 'filter-image-preview ' + filterMap[selectedFilter];
+    if (cookieFilterValue) {
+      filterImage.className = 'filter-image-preview ' + cookieFilterValue;
+    } else {
+      filterImage.className = 'filter-image-preview ' + filterMap[selectedFilter];
+    }
   };
 
   cleanupResizer();
   updateBackground();
-  initializationFilterForm();
+  filterForm.onchange(1);
 })();
