@@ -330,17 +330,18 @@
     removeInfoMsgTimeout(Msg);
   };
 
+  /**
+   * Вычисляем дату cookie.
+   */
   var getDiffDate = function() {
     // Текущие преобразования относительно моего дня рождения
     var now = +Date.now(); // (new Date()).getTime() или +Date.now()
     var myBithday = (new Date('01.07.' + (new Date()).getFullYear())).getTime();
-    var dateDiff = now - myBithday; // var dateDiff = Math.ads(now - myBithday); Хмм...
+    var dateDiff = now - myBithday;
 
-    // Упсс! Даты совпали:) Даём один день на размышление;)
     if (!dateDiff) {
-      dateDiff = 1;
-    } else if (dateDiff) {
-      dateDiff *= -1;
+      var year = new Date().getFullYear() + 1;
+      dateDiff = new Date('01.07.' + year).getTime();
     }
 
     // Вычисляем дату 'протухания' cookie
@@ -350,10 +351,24 @@
   };
 
   /**
+   * Читаем из cookie.
+   */
+  var readFilterFromCookie = function() {
+    // Если они существуют.
+    if (docCookies.hasItem('filter')) {
+      var cookieFilterValue = docCookies.getItem('filter');
+      var element = document.getElementById('upload-' + cookieFilterValue);
+
+      element.checked = true;
+      filterForm.onchange();
+    }
+  };
+
+  /**
    * Обработчик изменения фильтра. Добавляет класс из filterMap соответствующий
    * выбранному значению в форме.
    */
-  filterForm.onchange = function(init) {
+  filterForm.onchange = function() {
     if (!filterMap) {
       // Ленивая инициализация. Объект не создается до тех пор, пока
       // не понадобится прочитать его в первый раз, а после этого запоминается
@@ -366,12 +381,7 @@
     }
 
     // Существуют ли наши cookie
-    if (docCookies.hasItem('filter') && init === 1) {
-      var cookieFilterValue = docCookies.getItem('filter');
-      var element = document.getElementById('upload-' + cookieFilterValue);
-
-      element.checked = true;
-    } else {
+    if (!docCookies.hasItem('filter')) {
       var formatedDateToExpire = getDiffDate();
 
       var selectedFilter = [].filter.call(filterForm['upload-filter'], function(item) {
@@ -384,14 +394,10 @@
     // Класс перезаписывается, а не обновляется через classList потому что нужно
     // убрать предыдущий примененный класс. Для этого нужно или запоминать его
     // состояние или просто перезаписывать.
-    if (cookieFilterValue) {
-      filterImage.className = 'filter-image-preview ' + cookieFilterValue;
-    } else {
-      filterImage.className = 'filter-image-preview ' + filterMap[selectedFilter];
-    }
+    filterImage.className = 'filter-image-preview ' + filterMap[selectedFilter];
   };
 
   cleanupResizer();
   updateBackground();
-  filterForm.onchange(1);
+  readFilterFromCookie();
 })();
