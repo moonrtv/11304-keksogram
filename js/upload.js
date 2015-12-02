@@ -340,7 +340,7 @@
     var dateDiff = now - myBithday;
 
     if (!dateDiff) {
-      var year = new Date().getFullYear() + 1;
+      var year = new Date().getFullYear() - 1;
       dateDiff = new Date('01.07.' + year).getTime();
     }
 
