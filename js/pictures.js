@@ -1,11 +1,11 @@
 'use strict';
 
 (function() {
-  // Контейнер для хранения фотографии
+  // РљРѕРЅС‚РµР№РЅРµСЂ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ С„РѕС‚РѕРіСЂР°С„РёРё
   var container = document.querySelector('.pictures');
   var pictures = pictures;
 
-  // Цикл по всем картинкам
+  // Р¦РёРєР» РїРѕ РІСЃРµРј РєР°СЂС‚РёРЅРєР°Рј
   pictures.forEach(function(picture) {
     var element = getElementFromTemplate(picture);
     container.appendChild(element);
@@ -16,23 +16,23 @@
     var filters = document.querySelector('.filters');
     var element;
 
-    // Скрываем фильтры
+    // РЎРєСЂС‹РІР°РµРј С„РёР»СЊС‚СЂС‹
     filters.classList.add('hidden');
 
-    // Проверка на IE
+    // РџСЂРѕРІРµСЂРєР° РЅР° IE
     if ('content' in template) {
       element = template.content.children[0].cloneNode(true);
     } else {
       element = template.children[0].cloneNode(true);
     }
 
-    // Заполняем данными
+    // Р—Р°РїРѕР»РЅСЏРµРј РґР°РЅРЅС‹РјРё
     element.querySelector('.picture-comments').textContent = data.comments;
     element.querySelector('.picture-likes').textContent = data.likes;
 
     var backgroundImage = new Image();
 
-    // Функция загрузки
+    // Р¤СѓРЅРєС†РёСЏ Р·Р°РіСЂСѓР·РєРё
     backgroundImage.onload = function() {
       clearTimeout(imageLoadTimeout);
       element.style.backgroundImage = 'url(\'' + data.url + '\')';
@@ -46,24 +46,24 @@
     };
 
 
-    // Если изображение не загрузилось (404 ошибка, ошибка сервера),
-    // показываем сообщение, что у отеля нет фотографий.
+    // Р•СЃР»Рё РёР·РѕР±СЂР°Р¶РµРЅРёРµ РЅРµ Р·Р°РіСЂСѓР·РёР»РѕСЃСЊ (404 РѕС€РёР±РєР°, РѕС€РёР±РєР° СЃРµСЂРІРµСЂР°),
+    // РїРѕРєР°Р·С‹РІР°РµРј СЃРѕРѕР±С‰РµРЅРёРµ, С‡С‚Рѕ Сѓ РѕС‚РµР»СЏ РЅРµС‚ С„РѕС‚РѕРіСЂР°С„РёР№.
     backgroundImage.onerror = function() {
       element.classList.add('picture-load-failure');
     };
 
-    // Время ожидания загрузки фотографии
+    // Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ Р·Р°РіСЂСѓР·РєРё С„РѕС‚РѕРіСЂР°С„РёРё
     var IMAGE_TIMEOUT = 5000;
 
-    // Установка таймаута на загрузку изображения. Таймер ожидает 5 секунд
-    // после которых он уберет src у изображения и добавит класс picture-load-failure,
-    // который показывает, что фотография не прогрузилась.
+    // РЈСЃС‚Р°РЅРѕРІРєР° С‚Р°Р№РјР°СѓС‚Р° РЅР° Р·Р°РіСЂСѓР·РєСѓ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ. РўР°Р№РјРµСЂ РѕР¶РёРґР°РµС‚ 5 СЃРµРєСѓРЅРґ
+    // РїРѕСЃР»Рµ РєРѕС‚РѕСЂС‹С… РѕРЅ СѓР±РµСЂРµС‚ src Сѓ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ Рё РґРѕР±Р°РІРёС‚ РєР»Р°СЃСЃ picture-load-failure,
+    // РєРѕС‚РѕСЂС‹Р№ РїРѕРєР°Р·С‹РІР°РµС‚, С‡С‚Рѕ С„РѕС‚РѕРіСЂР°С„РёСЏ РЅРµ РїСЂРѕРіСЂСѓР·РёР»Р°СЃСЊ.
     var imageLoadTimeout = setTimeout(function() {
-      backgroundImage.src = ''; // Прекращаем загрузку
-      element.classList.add('picture-load-failure'); // Показываем ошибку
+      backgroundImage.src = ''; // РџСЂРµРєСЂР°С‰Р°РµРј Р·Р°РіСЂСѓР·РєСѓ
+      element.classList.add('picture-load-failure'); // РџРѕРєР°Р·С‹РІР°РµРј РѕС€РёР±РєСѓ
     }, IMAGE_TIMEOUT);
 
-    // Изменение src у изображения начинает загрузку.
+    // РР·РјРµРЅРµРЅРёРµ src Сѓ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ РЅР°С‡РёРЅР°РµС‚ Р·Р°РіСЂСѓР·РєСѓ.
     backgroundImage.src = data.preview;
 
     return element;
