@@ -3,9 +3,10 @@
 (function() {
   // Контейнер для хранения фотографии
   var container = document.querySelector('.pictures');
+  var pictures = pictures;
 
   // Цикл по всем картинкам
-  pictures.forEach(function(picture){
+  pictures.forEach(function(picture) {
     var element = getElementFromTemplate(picture);
     container.appendChild(element);
   });
@@ -34,7 +35,7 @@
     // Функция загрузки
     backgroundImage.onload = function() {
       clearTimeout(imageLoadTimeout);
-      element.style.backgroundImage = 'url(\''+ '../../'+ data.url + '\')';
+      element.style.backgroundImage = 'url(\'' + data.url + '\')';
       var oldImg = element.querySelector('img');
       var newImg = document.createElement('img');
       newImg.setAttribute('src', data.url);
