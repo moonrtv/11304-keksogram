@@ -342,6 +342,8 @@
     if (!dateDiff) {
       var year = new Date().getFullYear() - 1;
       dateDiff = new Date('01.07.' + year).getTime();
+    } else if (dateDiff < 0) {
+      dateDiff = myBithday - now;
     }
 
     // Вычисляем дату 'протухания' cookie
