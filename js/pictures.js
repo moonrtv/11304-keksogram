@@ -3,7 +3,7 @@
 (function() {
   // Контейнер для хранения фотографии
   var container = document.querySelector('.pictures');
-  var pictures = pictures;
+  var pictures = window.pictures;
 
   // Цикл по всем картинкам
   pictures.forEach(function(picture) {
@@ -64,7 +64,7 @@
     }, IMAGE_TIMEOUT);
 
     // Изменение src у изображения начинает загрузку.
-    backgroundImage.src = data.preview;
+    backgroundImage.src = data.url;
 
     return element;
   }

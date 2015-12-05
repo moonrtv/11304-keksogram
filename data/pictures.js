@@ -1,4 +1,4 @@
-var pictures = [{
+window.pictures = [{
   "likes": 79,
   "comments": 51,
   "url": "photos/1.jpg"
