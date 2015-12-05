@@ -337,13 +337,19 @@
     // Текущие преобразования относительно моего дня рождения
     var now = +Date.now(); // (new Date()).getTime() или +Date.now()
     var myBithday = (new Date('01.07.' + (new Date()).getFullYear())).getTime();
+    // Если у нас день рождения уже прошёл(положительное число), то мы из текущей даты вычитаем нашу дату
     var dateDiff = now - myBithday;
 
     if (!dateDiff) {
+      // Если дни совпали(ноль), то берём предыдущий год
       var year = new Date().getFullYear() - 1;
       dateDiff = new Date('01.07.' + year).getTime();
     } else if (dateDiff < 0) {
-      dateDiff = myBithday - now;
+      // Если у нас в этом году ещё не было дня рождения(то получим отрицательное число), тогда берём
+      // прошедший год и текущую дату и производим вычитание
+      year = new Date().getFullYear() - 1;
+      myBithday = new Date('01.07.' + year).getTime();
+      dateDiff = now - myBithday;
     }
 
     // Вычисляем дату 'протухания' cookie
