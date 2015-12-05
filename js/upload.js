@@ -331,6 +331,14 @@
   };
 
   /**
+   * Вычисляем предыдущую дату моего дня рождения.
+   */
+  var getPreviousDateMyB = function() {
+    var year = new Date().getFullYear() - 1;
+    return new Date('01.07.' + year).getTime();
+  };
+
+  /**
    * Вычисляем дату cookie.
    */
   var getDiffDate = function() {
@@ -342,13 +350,11 @@
 
     if (!dateDiff) {
       // Если дни совпали(ноль), то берём предыдущий год
-      var year = new Date().getFullYear() - 1;
-      dateDiff = new Date('01.07.' + year).getTime();
+      dateDiff = getPreviousDateMyB();
     } else if (dateDiff < 0) {
       // Если у нас в этом году ещё не было дня рождения(то получим отрицательное число), тогда берём
       // прошедший год и текущую дату и производим вычитание
-      year = new Date().getFullYear() - 1;
-      myBithday = new Date('01.07.' + year).getTime();
+      myBithday = getPreviousDateMyB();
       dateDiff = now - myBithday;
     }
 
