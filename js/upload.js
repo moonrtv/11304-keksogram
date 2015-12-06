@@ -331,14 +331,6 @@
   };
 
   /**
-   * Вычисляем предыдущую дату моего дня рождения.
-   */
-  var getPreviousDateMyB = function() {
-    var year = new Date().getFullYear() - 1;
-    return new Date('01.07.' + year).getTime();
-  };
-
-  /**
    * Вычисляем дату cookie.
    */
   var getDiffDate = function() {
