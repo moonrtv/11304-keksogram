@@ -348,13 +348,9 @@
     // Если у нас день рождения уже прошёл(положительное число), то мы из текущей даты вычитаем нашу дату
     var dateDiff = now - myBithday;
 
-    if (!dateDiff) {
-      // Если дни совпали(ноль), то берём предыдущий год
-      dateDiff = getPreviousDateMyB();
-    } else if (dateDiff < 0) {
-      // Если у нас в этом году ещё не было дня рождения(то получим отрицательное число), тогда берём
-      // прошедший год и текущую дату и производим вычитание
-      myBithday = getPreviousDateMyB();
+    if (dateDiff <= 0) {
+      var year = new Date().getFullYear() - 1;
+      myBithday = new Date('01.07.' + year).getTime();
       dateDiff = now - myBithday;
     }
 
