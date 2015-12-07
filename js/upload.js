@@ -374,7 +374,7 @@
 
     var currentCookie = docCookies.getItem('filter');
 
-    if (currentCookie != selectedFilter) {
+    if (currentCookie !== selectedFilter) {
       var formatedDateToExpire = getDiffDate();
       docCookies.setItem('filter', selectedFilter, formatedDateToExpire);
     }
