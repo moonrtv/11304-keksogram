@@ -3,7 +3,12 @@
 (function() {
   // Контейнер для хранения фотографии
   var container = document.querySelector('.pictures');
+  var template = document.querySelector('#picture-template');
+  var filters = document.querySelector('.filters');
   var pictures = window.pictures;
+
+  // Скрываем фильтры
+  filters.classList.add('hidden');
 
   // Цикл по всем картинкам
   pictures.forEach(function(picture) {
@@ -11,13 +16,11 @@
     container.appendChild(element);
   });
 
-  function getElementFromTemplate(data) {
-    var template = document.querySelector('#picture-template');
-    var filters = document.querySelector('.filters');
-    var element;
+  // Показываем фильтры
+  filters.classList.remove('hidden');
 
-    // Скрываем фильтры
-    filters.classList.add('hidden');
+  function getElementFromTemplate(data) {
+    var element;
 
     // Проверка на IE
     if ('content' in template) {
@@ -42,7 +45,6 @@
       newImg.style.width = '182px';
       newImg.style.height = '182px';
       element.replaceChild(newImg, oldImg);
-      filters.classList.remove('hidden');
     };
 
 
