@@ -337,31 +337,19 @@
     // Текущие преобразования относительно моего дня рождения
     var now = +Date.now(); // (new Date()).getTime() или +Date.now()
     var myBithday = (new Date('01.07.' + (new Date()).getFullYear())).getTime();
+    // Если у нас день рождения уже прошёл(положительное число), то мы из текущей даты вычитаем нашу дату
     var dateDiff = now - myBithday;
 
-    if (!dateDiff) {
+    if (dateDiff <= 0) {
       var year = new Date().getFullYear() - 1;
-      dateDiff = new Date('01.07.' + year).getTime();
+      myBithday = new Date('01.07.' + year).getTime();
+      dateDiff = now - myBithday;
     }
 
     // Вычисляем дату 'протухания' cookie
     var dateToExpire = new Date(now + dateDiff);
 
     return new Date(dateToExpire).toUTCString();
-  };
-
-  /**
-   * Читаем из cookie.
-   */
-  var readFilterFromCookie = function() {
-    // Если они существуют.
-    if (docCookies.hasItem('filter')) {
-      var cookieFilterValue = docCookies.getItem('filter');
-      var element = document.getElementById('upload-' + cookieFilterValue);
-
-      element.checked = true;
-      filterForm.onchange();
-    }
   };
 
   /**
@@ -380,24 +368,31 @@
       };
     }
 
-    // Существуют ли наши cookie
-    if (!docCookies.hasItem('filter')) {
+    var selectedFilter = 'filter-' + [].filter.call(filterForm['upload-filter'], function(item) {
+      return item.checked;
+    })[0].value;
+
+    var currentCookie = docCookies.getItem('filter');
+
+    if (currentCookie != selectedFilter) {
       var formatedDateToExpire = getDiffDate();
-
-      var selectedFilter = [].filter.call(filterForm['upload-filter'], function(item) {
-        return item.checked;
-      })[0].value;
-
-      docCookies.setItem('filter', 'filter-' + selectedFilter, formatedDateToExpire);
+      docCookies.setItem('filter', selectedFilter, formatedDateToExpire);
     }
 
     // Класс перезаписывается, а не обновляется через classList потому что нужно
     // убрать предыдущий примененный класс. Для этого нужно или запоминать его
     // состояние или просто перезаписывать.
-    filterImage.className = 'filter-image-preview ' + filterMap[selectedFilter];
+    // Прошлая реализация
+    //filterImage.className = 'filter-image-preview ' + filterMap[selectedFilter];
+    filterImage.className = 'filter-image-preview ' + selectedFilter;
   };
 
   cleanupResizer();
   updateBackground();
-  readFilterFromCookie();
+
+  if (docCookies.getItem('filter')) {
+    filterForm['upload-filter'].value = docCookies.getItem('filter');
+    filterForm['upload-' + docCookies.getItem('filter')].checked = true;
+    filterForm.onchange();
+  }
 })();
