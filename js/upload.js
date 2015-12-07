@@ -353,20 +353,6 @@
   };
 
   /**
-   * Читаем из cookie.
-   */
-  var readFilterFromCookie = function() {
-    // Если они существуют.
-    if (docCookies.hasItem('filter')) {
-      var cookieFilterValue = docCookies.getItem('filter');
-      var element = document.getElementById('upload-' + cookieFilterValue);
-
-      element.checked = true;
-      filterForm.onchange();
-    }
-  };
-
-  /**
    * Обработчик изменения фильтра. Добавляет класс из filterMap соответствующий
    * выбранному значению в форме.
    */
@@ -382,24 +368,31 @@
       };
     }
 
-    // Существуют ли наши cookie
-    if (!docCookies.hasItem('filter')) {
+    var selectedFilter = 'filter-' + [].filter.call(filterForm['upload-filter'], function(item) {
+      return item.checked;
+    })[0].value;
+
+    var currentCookie = docCookies.getItem('filter');
+
+    if (currentCookie != selectedFilter) {
       var formatedDateToExpire = getDiffDate();
-
-      var selectedFilter = [].filter.call(filterForm['upload-filter'], function(item) {
-        return item.checked;
-      })[0].value;
-
-      docCookies.setItem('filter', 'filter-' + selectedFilter, formatedDateToExpire);
+      docCookies.setItem('filter', selectedFilter, formatedDateToExpire);
     }
 
     // Класс перезаписывается, а не обновляется через classList потому что нужно
     // убрать предыдущий примененный класс. Для этого нужно или запоминать его
     // состояние или просто перезаписывать.
-    filterImage.className = 'filter-image-preview ' + filterMap[selectedFilter];
+    // Прошлая реализация
+    //filterImage.className = 'filter-image-preview ' + filterMap[selectedFilter];
+    filterImage.className = 'filter-image-preview ' + selectedFilter;
   };
 
   cleanupResizer();
   updateBackground();
-  readFilterFromCookie();
+
+  if (docCookies.getItem('filter')) {
+    filterForm['upload-filter'].value = docCookies.getItem('filter');
+    filterForm['upload-' + docCookies.getItem('filter')].checked = true;
+    filterForm.onchange();
+  }
 })();
