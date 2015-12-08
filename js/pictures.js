@@ -5,7 +5,6 @@
   var container = document.querySelector('.pictures');
   var template = document.querySelector('#picture-template');
   var filters = document.querySelector('.filters');
-  var pictures = window.pictures;
   var fragment = document.createDocumentFragment();
   var picturesMas = [];
   var filteredPictures = [];
@@ -29,7 +28,7 @@
     }
 
     // Цикл по всем картинкам
-    picturesToRender.forEach(function (picture) {
+    picturesToRender.forEach(function(picture) {
       var element = getElementFromTemplate(picture);
       fragment.appendChild(element);
     });
@@ -58,10 +57,10 @@
         // Не реализовал выборку в 3 месяца
         // по убыванию цены.
         filteredPictures = filteredPictures.sort(function(a, b) {
-            var dateB = new Date(b.date).getTime();
-            var dateA = new Date(a.date).getTime();
-            return dateB - dateA;
-          });
+          var dateB = new Date(b.date).getTime();
+          var dateA = new Date(a.date).getTime();
+          return dateB - dateA;
+        });
         break;
 
       case 'filter-discussed':
