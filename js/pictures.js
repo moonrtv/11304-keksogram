@@ -66,8 +66,13 @@
       case 'filter-discussed':
         // Фильтр самые обсуждаемые
         // по убыванию
+        var threeMonth = new Date() - 90 * 24 * 60 * 60 * 1000;
+
         filteredPictures = filteredPictures.sort(function(a, b) {
           return b.comments - a.comments;
+        }).filter(function(picture) {
+          var datePicture = Date.parse(picture.date);
+          return datePicture >= threeMonth;
         });
         break;
     }
@@ -84,7 +89,7 @@
     var xhr = new XMLHttpRequest();
     xhr.open('GET', 'data/pictures.json');
     xhr.onload = function(evt) {
-      container.classList.remove('.pictures-loading');
+      container.classList.remove('pictures-loading');
       var rawData = evt.target.response;
       var loadedPictures = JSON.parse(rawData);
       updateLoadedPictures(loadedPictures);
