@@ -1,6 +1,7 @@
 'use strict';
 
 (function() {
+  var IMG_SIZE = '182px';
   // Контейнер для хранения фотографии
   var container = document.querySelector('.pictures');
   var template = document.querySelector('#picture-template');
@@ -128,25 +129,6 @@
 
     var backgroundImage = new Image();
 
-    // Функция загрузки
-    backgroundImage.onload = function() {
-      clearTimeout(imageLoadTimeout);
-      element.style.backgroundImage = 'url(\'' + data.url + '\')';
-      var oldImg = element.querySelector('img');
-      var newImg = document.createElement('img');
-      newImg.setAttribute('src', data.url);
-      newImg.style.width = '182px';
-      newImg.style.height = '182px';
-      element.replaceChild(newImg, oldImg);
-    };
-
-
-    // Если изображение не загрузилось (404 ошибка, ошибка сервера),
-    // показываем сообщение, что у отеля нет фотографий.
-    backgroundImage.onerror = function() {
-      element.classList.add('picture-failure');
-    };
-
     // Время ожидания загрузки фотографии
     var IMAGE_TIMEOUT = 5000;
 
@@ -160,6 +142,21 @@
 
     // Изменение src у изображения начинает загрузку.
     backgroundImage.src = data.url;
+    backgroundImage.style.width = IMG_SIZE;
+    backgroundImage.style.height = IMG_SIZE;
+    var currentImg = element.querySelector('img');
+
+    // Функция загрузки
+    backgroundImage.onload = function() {
+      clearTimeout(imageLoadTimeout);
+      element.replaceChild(backgroundImage, currentImg);
+    };
+
+    // Если изображение не загрузилось (404 ошибка, ошибка сервера),
+    // показываем сообщение, что у отеля нет фотографий.
+    backgroundImage.onerror = function() {
+      element.classList.add('picture-load-failure');
+    };
 
     return element;
   }
