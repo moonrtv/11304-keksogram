@@ -79,7 +79,6 @@
     }
 
     renderPictures(filteredPictures, true);
-
     activeFilter = selectedFilter;
   }
 
@@ -89,15 +88,29 @@
   function getPictures() {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', 'data/pictures.json');
+    xhr.timeout = 10000;
     xhr.onload = function(evt) {
       container.classList.remove('pictures-loading');
       var rawData = evt.target.response;
       var loadedPictures = JSON.parse(rawData);
       updateLoadedPictures(loadedPictures);
+    }
+
+    // Вызываем при ошибке
+    xhr.onerror = function() {
+      addClassFailure();
     };
 
+    // Нет ответа в течение времени
+    xhr.ontimeout = function() {
+      addClassFailure();
+    };
     container.classList.add('pictures-loading');
     xhr.send();
+  }
+
+  function addClassFailure() {
+    container.classList.add('pictures-failure');
   }
 
   /**
@@ -152,8 +165,7 @@
       element.replaceChild(backgroundImage, currentImg);
     };
 
-    // Если изображение не загрузилось (404 ошибка, ошибка сервера),
-    // показываем сообщение, что у отеля нет фотографий.
+    // Если изображение не загрузилось (404 ошибка, ошибка сервера)
     backgroundImage.onerror = function() {
       element.classList.add('picture-load-failure');
     };
