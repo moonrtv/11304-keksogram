@@ -94,7 +94,7 @@
       var rawData = evt.target.response;
       var loadedPictures = JSON.parse(rawData);
       updateLoadedPictures(loadedPictures);
-    }
+    };
 
     // Вызываем при ошибке
     xhr.onerror = function() {
