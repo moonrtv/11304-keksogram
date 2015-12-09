@@ -59,8 +59,7 @@
       element.replaceChild(backgroundImage, currentImg);
     };
 
-    // Если изображение не загрузилось (404 ошибка, ошибка сервера),
-    // показываем сообщение, что у отеля нет фотографий.
+    // Если изображение не загрузилось (404 ошибка, ошибка сервера)
     backgroundImage.onerror = function() {
       element.classList.add('picture-load-failure');
     };
