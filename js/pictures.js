@@ -1,16 +1,78 @@
 'use strict';
 
 (function() {
+  /**
+   * Размер картинки
+   * @const {string}
+   */
   var IMG_SIZE = '182px';
-  // Контейнер для хранения фотографии
+
+  /**
+   * Количество элементов на странице
+   * @const {number}
+   */
+  var PAGE_SIZE = 12;
+
+  /**
+   * Таймер для регулирования частоты вызова
+   * скролла
+   * @const {number}
+   */
+  var SCROLL_TIMER = 100;
+
+  /**
+   * Контейнер для хранения фотографии
+   * @type {Element}
+   */
   var container = document.querySelector('.pictures');
+
+  /**
+   * Храним ссылку на структуру шаблона
+   * @type {Element}
+   */
   var template = document.querySelector('#picture-template');
+
+  /**
+   * Ссылка на родителя всех фильтров
+   * @type {Element}
+   */
   var filters = document.querySelector('.filters');
+
+  /**
+   * Используем для ускорения прогрузки страницы
+   * @type {DocumentFragment}
+   */
   var fragment = document.createDocumentFragment();
+
+  /**
+   * Массив всех фотографий
+   * @type {Array}
+   */
   var picturesMas = [];
+
+  /**
+   * Отфильтрованный массив фотографий
+   * @type {Array}
+   */
   var filteredPictures = [];
+
+  /**
+   * Храним имя на фильтра по умолчанию
+   * @type {string}
+   */
   var activeFilter = 'filter-popular';
 
+  /**
+   * Текущая страничка
+   * @type {number}
+   */
+  var currentPage = 0;
+
+  /**
+   * id-счётчика для scroll'а
+   * @type {number}
+   */
+  var scrollTimeout;
 
   getPictures();
 
@@ -19,18 +81,48 @@
 
   filters.addEventListener('click', function(evt) {
     var clickedElement = evt.target;
+
     if (clickedElement.classList.contains('filters-item')) {
       setActiveFilter(clickedElement.previousElementSibling.id);
     }
   });
 
-  function renderPictures(picturesToRender, replace) {
+  window.addEventListener('scroll', function() {
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(checkPositionPages, SCROLL_TIMER);
+  });
+
+  /**
+   * Проверяем нужноли прогружать следующую страничку
+   */
+  function checkPositionPages() {
+    var footerCoordinates = container.getBoundingClientRect();
+    var viewportSize = window.innerHeight;
+
+    if (footerCoordinates.bottom - viewportSize <= footerCoordinates.height) {
+      if (currentPage < Math.ceil(filteredPictures.length / PAGE_SIZE)) {
+        renderPictures(filteredPictures, ++currentPage);
+      }
+    }
+  }
+
+  /**
+   * Отрисовка фотографий
+   * @param {Array} picturesToRender
+   * @param {number} pageNumber
+   * @param {boolean} replace
+   */
+  function renderPictures(picturesToRender, pageNumber, replace) {
     if (replace) {
       container.innerHTML = '';
     }
 
+    var numberFrom = pageNumber * PAGE_SIZE;
+    var numberTo = numberFrom + PAGE_SIZE;
+    var pagePictures = picturesToRender.slice(numberFrom, numberTo);
+
     // Цикл по всем картинкам
-    picturesToRender.forEach(function(picture) {
+    pagePictures.forEach(function(picture) {
       var element = getElementFromTemplate(picture);
       fragment.appendChild(element);
     });
@@ -42,6 +134,8 @@
 
   /**
    * Установка фильтра
+   * @param {string} selectedFilter
+   * @param {boolean} force
    */
   function setActiveFilter(selectedFilter, force) {
     // Предотвращение повторной установки одного и того же фильтра.
@@ -80,7 +174,8 @@
         break;
     }
 
-    renderPictures(filteredPictures, true);
+    currentPage = 0;
+    renderPictures(filteredPictures, currentPage, true);
     activeFilter = selectedFilter;
   }
 
@@ -116,7 +211,9 @@
   }
 
   /**
-   * Обновление фотографий
+   * Вызываем, если нужно обновить фотографии
+   * что-то изменилось (выбрали другой фильтр)
+   * @param {Array} loadedPictures
    */
   function updateLoadedPictures(loadedPictures) {
     picturesMas = loadedPictures;
@@ -126,7 +223,9 @@
   }
 
   /**
-   * Создаём шаблон для фотографии
+   * Получаем шаблон элемента
+   * @param {Object} data
+   * @returns {HTMLElement}
    */
   function getElementFromTemplate(data) {
     var element;
@@ -148,11 +247,11 @@
     var IMAGE_TIMEOUT = 5000;
 
     // Установка таймаута на загрузку изображения. Таймер ожидает 5 секунд
-    // после которых он уберет src у изображения и добавит класс picture-load-failure,
+    // после которых он уберет src у изображения и добавит класс pictures-failure,
     // который показывает, что фотография не прогрузилась.
     var imageLoadTimeout = setTimeout(function() {
       backgroundImage.src = ''; // Прекращаем загрузку
-      element.classList.add('picture-failure'); // Показываем ошибку
+      element.classList.add('pictures-failure'); // Показываем ошибку
     }, IMAGE_TIMEOUT);
 
     // Изменение src у изображения начинает загрузку.
@@ -167,10 +266,9 @@
       element.replaceChild(backgroundImage, currentImg);
     };
 
-    // Если изображение не загрузилось (404 ошибка, ошибка сервера),
-    // показываем сообщение, что у отеля нет фотографий.
+    // Если изображение не загрузилось (404 ошибка, ошибка сервера)
     backgroundImage.onerror = function() {
-      element.classList.add('picture-failure');
+      element.classList.add('pictures-failure');
     };
 
     return element;
