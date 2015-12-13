@@ -16,8 +16,9 @@
 
   filters.addEventListener('click', function(evt) {
     var clickedElement = evt.target;
-    if (clickedElement.classList.contains('filters-item')) {
-      setActiveFilter(clickedElement.previousElementSibling.id);
+
+    if (clickedElement.classList.contains('filters-radio')) {
+      setActiveFilter(clickedElement.id);
     }
   });
 
@@ -35,9 +36,6 @@
     });
     container.appendChild(fragment);
   }
-
-  // Показываем фильтры
-  filters.classList.remove('hidden');
 
   /**
    * Установка фильтра
@@ -93,8 +91,13 @@
     xhr.onload = function(evt) {
       container.classList.remove('pictures-loading');
       var rawData = evt.target.response;
-      var loadedPictures = JSON.parse(rawData);
-      updateLoadedPictures(loadedPictures);
+      try {
+        var loadedPictures = JSON.parse(rawData);
+        updateLoadedPictures(loadedPictures);
+      } catch(evt) {
+        console.log('Призагрузке JSON возникла ошибка.');
+        xhr.onerror();
+      }
     };
 
     // Вызываем при ошибке
@@ -151,7 +154,7 @@
     // который показывает, что фотография не прогрузилась.
     var imageLoadTimeout = setTimeout(function() {
       backgroundImage.src = ''; // Прекращаем загрузку
-      element.classList.add('picture-failure'); // Показываем ошибку
+      element.classList.add('picture-load-failure'); // Показываем ошибку
     }, IMAGE_TIMEOUT);
 
     // Изменение src у изображения начинает загрузку.
@@ -173,4 +176,7 @@
 
     return element;
   }
+
+  // Показываем фильтры
+  filters.classList.remove('hidden');
 })();
