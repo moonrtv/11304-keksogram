@@ -94,7 +94,7 @@
       try {
         var loadedPictures = JSON.parse(rawData);
         updateLoadedPictures(loadedPictures);
-      } catch(evt) {
+      } catch (e) {
         console.log('Призагрузке JSON возникла ошибка.');
         xhr.onerror();
       }
