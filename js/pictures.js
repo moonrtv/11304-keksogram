@@ -79,26 +79,32 @@
   // Скрываем фильтры
   filters.classList.add('hidden');
 
+  /**
+   * Выбор фильтрации
+   * @event click
+   */
   filters.addEventListener('click', function(evt) {
     var clickedElement = evt.target;
-
     if (clickedElement.classList.contains('filters-radio')) {
       setActiveFilter(clickedElement.id);
     }
   });
 
+  /**
+   * "Медленный скроллинг"
+   * @event scroll
+   */
   window.addEventListener('scroll', function() {
     clearTimeout(scrollTimeout);
     scrollTimeout = setTimeout(checkPositionPages, SCROLL_TIMER);
   });
 
   /**
-   * Проверяем нужноли прогружать следующую страничку
+   * Проверяем нужно ли прогружать страничку
    */
   function checkPositionPages() {
     var footerCoordinates = container.getBoundingClientRect();
     var viewportSize = window.innerHeight;
-
     if (footerCoordinates.bottom - viewportSize <= footerCoordinates.height) {
       if (currentPage < Math.ceil(filteredPictures.length / PAGE_SIZE)) {
         renderPictures(filteredPictures, ++currentPage);
@@ -135,6 +141,7 @@
    * @param {boolean} force
    */
   function setActiveFilter(selectedFilter, force) {
+
     // Предотвращение повторной установки одного и того же фильтра.
     if (activeFilter === selectedFilter && !force) {
       return;
@@ -144,35 +151,31 @@
 
     // Отсортировать и отфильтровать фотографии по выбранному параметру и вывести на страницу
     filteredPictures = picturesMas.slice(0); // Копирование массива
-
     switch (selectedFilter) {
       case 'filter-new':
         // Реализовал выборку в 3 месяца
         // по убыванию цены.
         var threeMonth = new Date() - 90 * 24 * 60 * 60 * 1000;
-
-        filteredPictures = filteredPictures.sort(function(a, b) {
+        filteredPictures = filteredPictures.filter(function(picture) {
+          var datePicture = Date.parse(picture.date);
+          return datePicture >= threeMonth;
+        }).sort(function(a, b) {
           var dateB = new Date(b.date).getTime();
           var dateA = new Date(a.date).getTime();
           return dateB - dateA;
-        }).filter(function(picture) {
-          var datePicture = Date.parse(picture.date);
-          return datePicture >= threeMonth;
         });
         break;
-
       case 'filter-discussed':
         // Фильтр самые обсуждаемые
         // по убыванию
-
         filteredPictures = filteredPictures.sort(function(a, b) {
           return b.comments - a.comments;
         });
         break;
     }
-
     currentPage = 0;
     renderPictures(filteredPictures, currentPage, true);
+    checkPositionPages();
     activeFilter = selectedFilter;
   }
 
@@ -272,7 +275,6 @@
     backgroundImage.onerror = function() {
       element.classList.add('picture-load-failure');
     };
-
     return element;
   }
 
