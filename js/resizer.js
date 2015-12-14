@@ -111,35 +111,46 @@
       // Координаты задаются от центра холста.
       this._ctx.drawImage(this._image, displX, displY);
 
-      // Сохраним значения
-      var leftUpperCorner = (-this._resizeConstraint.side / 2) - this._ctx.lineWidth;
-
-      // Сделал задание с зигзагами, но не стал вставлять.
-      // Так как не знаю, как сделать в таком случае тень.
-      // Куда мне можно выложить черновой вариант?
-
-      // Отрисовка прямоугольника, обозначающего область изображения после
-      // кадрирования. Координаты задаются от центра.
-      this._ctx.strokeRect(
-          (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
-          (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
-          this._resizeConstraint.side - this._ctx.lineWidth / 2,
-          this._resizeConstraint.side - this._ctx.lineWidth / 2);
-
       // Затемнение
-      this._ctx.fillStyle = 'rgba(0, 0, 0, .8)';
-      // Горизонталь
-      this._ctx.fillRect(this._container.width, leftUpperCorner, -this._container.width * 2, leftUpperCorner);
-      this._ctx.fillRect(this._container.width, this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2, -this._container.width * 2, this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2);
-      // Вертикаль
-      this._ctx.fillRect(leftUpperCorner, leftUpperCorner, -this._container.width, this._resizeConstraint.side + this._ctx.lineWidth / 2);
-      this._ctx.fillRect(this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2, ((-this._resizeConstraint.side / 2) - this._ctx.lineWidth), this._container.width, this._resizeConstraint.side + this._ctx.lineWidth / 2);
+      this._ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+
+      this._ctx.fillRect(
+        (-this._resizeConstraint.side / 2) - this._ctx.lineWidth,
+        -this._resizeConstraint.side / 2 - this._ctx.lineWidth,
+        this._resizeConstraint.side + this._ctx.lineWidth / 2,
+        -( (this._container.height / 2) - (this._resizeConstraint.side / 2)));
+
+      this._ctx.fillRect(
+        (this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
+        -this._container.height / 2,
+        ( (this._container.width / 2) - (this._resizeConstraint.side / 2 - this._ctx.lineWidth)),
+        this._container.height);
+
+      this._ctx.fillRect(
+        (-this._resizeConstraint.side / 2) - this._ctx.lineWidth,
+        -this._container.height / 2,
+        -( (this._container.width / 2) - (this._resizeConstraint.side / 2 - this._ctx.lineWidth)),
+        this._container.height);
+
+      this._ctx.fillRect(
+        (-this._resizeConstraint.side / 2) - this._ctx.lineWidth,
+        this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2,
+        this._resizeConstraint.side + this._ctx.lineWidth / 2,
+        ( (this._container.height / 2) - (this._resizeConstraint.side / 2 - this._ctx.lineWidth) ));
 
       // Текст (заливка, курсив, кёрлинг, тип, координаты вывода)
       this._ctx.fillStyle = '#fff';
       this._ctx.font = 'italic 12pt Arial';
       var text = this._image.naturalWidth + ' x ' + this._image.naturalHeight;
       this._ctx.fillText(text, -40, ((-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2) - this._ctx.lineWidth * 2);
+
+      // Отрисовка прямоугольника, обозначающего область изображения после
+      // кадрирования. Координаты задаются от центра.
+      this._ctx.strokeRect(
+        (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
+        (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
+        this._resizeConstraint.side - this._ctx.lineWidth / 2,
+        this._resizeConstraint.side - this._ctx.lineWidth / 2);
 
       // Восстановление состояния канваса, которое было до вызова ctx.save
       // и последующего изменения системы координат. Нужно для того, чтобы
