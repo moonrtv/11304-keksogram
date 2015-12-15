@@ -182,13 +182,6 @@
     }
   });
 
-  /**
-   * Обработчик берущий значения смещения и размера кадра
-   * из объекта resizer для добавления их в форму
-   * @param {Event} resizerchange
-   */
-  window.addEventListener('resizerchange', resizeImg);
-
   function resizeImg() {
     var baseSize = currentResizer.getConstraint();
 
@@ -196,6 +189,13 @@
     resizeY.value = baseSize.y;
     resizeSide.value = baseSize.side;
   }
+
+  /**
+   * Обработчик берущий значения смещения и размера кадра
+   * из объекта resizer для добавления их в форму
+   * @param {Event} resizerchange
+   */
+  window.addEventListener('resizerchange', resizeImg);
 
   /**
    * Синхронизация изменения значений полей resizeForm с габаритами окна кадрирования
@@ -333,11 +333,14 @@
    */
   function resizeFormIsValid() {
     var Msg;
+    var error = null;
+    var flagValid = true;
     var resizeXVal = +resizeForm['resize-x'].value;
     var resizeYVal = +resizeForm['resize-y'].value;
     var resizeSideVal = +resizeForm['resize-size'].value;
 
-    var error = null;
+    // Проверка на отрицательность значений
+    // и занесение сообщений об ошибках
     if ((resizeXVal >= 0) && (resizeYVal >= 0) && (resizeSideVal >= 0)) {
       if ((resizeXVal + resizeSideVal) > currentResizer._image.naturalWidth) {
         error = ERR_MSG_LEFT;
@@ -348,7 +351,11 @@
       error = ERR_MSG_NEGATIVE;
     }
 
+    // Если переменная не пустая,
+    // то возвращаем false,
+    // блокируем кнопку и выводим сообщение
     if (error) {
+      flagValid = false;
       buttonSubmit.disabled = true;
       Msg = showInfoMsg(error);
     } else {
@@ -357,11 +364,7 @@
 
     removeInfoMsgTimeout(Msg);
 
-    if (error) {
-      return false;
-    } else {
-      return true;
-    }
+    return flagValid;
   }
 
   /**
