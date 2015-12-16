@@ -18,7 +18,7 @@
   var IMAGE_TIMEOUT = 5000;
 
   /**
-   * Ссылка на шаблон
+   * Храним ссылку на структуру шаблона
    * @type {HTMLElement}
    */
   var template = document.querySelector('#picture-template');
@@ -49,7 +49,7 @@
 
     // Заполняем данными
     this.element.querySelector('.picture-comments').textContent = this._data.comments;
-    this.element.querySelector('.picture-likes').textContent = this._data.likes;
+    this.element.querySelector('.picture-likes').textContent = this._data.likes.toString();
 
     var backgroundImage = new Image();
 
@@ -65,16 +65,19 @@
     backgroundImage.src = this._data.url;
     backgroundImage.style.width = IMG_SIZE;
     backgroundImage.style.height = IMG_SIZE;
+    this.element.classList.add('picture-load-process');
     var currentImg = this.element.querySelector('img');
 
     // Функция загрузки
     backgroundImage.addEventListener('load', function() {
       clearTimeout(imageLoadTimeout);
+      this.element.classList.remove('picture-load-process');
       this.element.replaceChild(backgroundImage, currentImg);
     }.bind(this));
 
     // Если изображение не загрузилось (404 ошибка, ошибка сервера)
     backgroundImage.addEventListener('error', function() {
+      this.element.classList.remove('picture-load-process');
       this.element.classList.add('picture-load-failure');
     }.bind(this));
 

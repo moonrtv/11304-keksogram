@@ -1,4 +1,4 @@
-/* global Photo: true */
+/* global Photo: true, Gallery: true */
 
 'use strict';
 
@@ -21,12 +21,6 @@
    * @type {Element}
    */
   var container = document.querySelector('.pictures');
-
-  /**
-   * Храним ссылку на структуру шаблона
-   * @type {Element}
-   */
- /* var template = document.querySelector('#picture-template');*/
 
   /**
    * Ссылка на родителя всех фильтров
@@ -70,6 +64,12 @@
    */
   var scrollTimeout;
 
+  /**
+   * Создаём объект галлерея
+   * @type {Object}
+   */
+  var gallery = new Gallery();
+
   getPictures();
 
   // Скрываем фильтры
@@ -112,7 +112,7 @@
    * Отрисовка фотографий
    * @param {Array} picturesToRender
    * @param {number} pageNumber
-   * @param {boolean} replace
+   * @param {boolean=} replace
    */
   function renderPictures(picturesToRender, pageNumber, replace) {
     if (replace) {
@@ -131,14 +131,20 @@
       var photo = new Photo(picture);
       var element = photo.render();
       fragment.appendChild(element);
+      element.addEventListener('click', _onPhotoClick);
     });
     container.appendChild(fragment);
+  }
+
+  function _onPhotoClick(evt) {
+    evt.preventDefault();
+    gallery.show();
   }
 
   /**
    * Установка фильтра
    * @param {string} selectedFilter
-   * @param {boolean} force
+   * @param {boolean=} force
    */
   function setActiveFilter(selectedFilter, force) {
 
@@ -183,7 +189,6 @@
    * Загрузка фотографий
    */
   function getPictures() {
-    document.querySelector('.pictures').classList.add('pictures-loading');
     var xhr = new XMLHttpRequest();
     xhr.open('GET', 'data/pictures.json');
     xhr.timeout = 10000;
