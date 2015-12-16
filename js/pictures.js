@@ -1,12 +1,8 @@
+/* global Photo: true */
+
 'use strict';
 
 (function() {
-  /**
-   * Размер картинки
-   * @const {string}
-   */
-  var IMG_SIZE = '182px';
-
   /**
    * Количество элементов на странице
    * @const {number}
@@ -30,7 +26,7 @@
    * Храним ссылку на структуру шаблона
    * @type {Element}
    */
-  var template = document.querySelector('#picture-template');
+ /* var template = document.querySelector('#picture-template');*/
 
   /**
    * Ссылка на родителя всех фильтров
@@ -120,7 +116,10 @@
    */
   function renderPictures(picturesToRender, pageNumber, replace) {
     if (replace) {
-      container.innerHTML = '';
+      var picturesAll = document.querySelectorAll('.picture');
+      Array.prototype.forEach.call(picturesAll, function(item) {
+        container.removeChild(item);
+      });
     }
 
     var numberFrom = pageNumber * PAGE_SIZE;
@@ -129,7 +128,8 @@
 
     // Цикл по всем картинкам
     pagePictures.forEach(function(picture) {
-      var element = getElementFromTemplate(picture);
+      var photo = new Photo(picture);
+      var element = photo.render();
       fragment.appendChild(element);
     });
     container.appendChild(fragment);
@@ -183,6 +183,7 @@
    * Загрузка фотографий
    */
   function getPictures() {
+    document.querySelector('.pictures').classList.add('pictures-loading');
     var xhr = new XMLHttpRequest();
     xhr.open('GET', 'data/pictures.json');
     xhr.timeout = 10000;
@@ -225,57 +226,6 @@
 
     // Выбор фильтрации
     setActiveFilter(activeFilter, true);
-  }
-
-  /**
-   * Получаем шаблон элемента
-   * @param {Object} data
-   * @returns {HTMLElement}
-   */
-  function getElementFromTemplate(data) {
-    var element;
-
-    // Проверка на IE
-    if ('content' in template) {
-      element = template.content.children[0].cloneNode(true);
-    } else {
-      element = template.children[0].cloneNode(true);
-    }
-
-    // Заполняем данными
-    element.querySelector('.picture-comments').textContent = data.comments;
-    element.querySelector('.picture-likes').textContent = data.likes;
-
-    var backgroundImage = new Image();
-
-    // Время ожидания загрузки фотографии
-    var IMAGE_TIMEOUT = 5000;
-
-    // Установка таймаута на загрузку изображения. Таймер ожидает 5 секунд
-    // после которых он уберет src у изображения и добавит класс picture-load-failure,
-    // который показывает, что фотография не прогрузилась.
-    var imageLoadTimeout = setTimeout(function() {
-      backgroundImage.src = ''; // Прекращаем загрузку
-      element.classList.add('picture-load-failure'); // Показываем ошибку
-    }, IMAGE_TIMEOUT);
-
-    // Изменение src у изображения начинает загрузку.
-    backgroundImage.src = data.url;
-    backgroundImage.style.width = IMG_SIZE;
-    backgroundImage.style.height = IMG_SIZE;
-    var currentImg = element.querySelector('img');
-
-    // Функция загрузки
-    backgroundImage.onload = function() {
-      clearTimeout(imageLoadTimeout);
-      element.replaceChild(backgroundImage, currentImg);
-    };
-
-    // Если изображение не загрузилось (404 ошибка, ошибка сервера)
-    backgroundImage.onerror = function() {
-      element.classList.add('picture-load-failure');
-    };
-    return element;
   }
 
   // Показываем фильтры
