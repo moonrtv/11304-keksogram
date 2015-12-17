@@ -18,19 +18,13 @@
 
   /**
    * Контейнер для хранения фотографии
-   * @type {Element}
+   * @type {HTMLElement}
    */
   var container = document.querySelector('.pictures');
 
   /**
-   * Храним ссылку на структуру шаблона
-   * @type {Element}
-   */
- /* var template = document.querySelector('#picture-template');*/
-
-  /**
    * Ссылка на родителя всех фильтров
-   * @type {Element}
+   * @type {HTMLElement}
    */
   var filters = document.querySelector('.filters');
 
@@ -183,7 +177,6 @@
    * Загрузка фотографий
    */
   function getPictures() {
-    document.querySelector('.pictures').classList.add('pictures-loading');
     var xhr = new XMLHttpRequest();
     xhr.open('GET', 'data/pictures.json');
     xhr.timeout = 10000;

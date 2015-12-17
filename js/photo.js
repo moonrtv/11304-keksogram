@@ -18,7 +18,7 @@
   var IMAGE_TIMEOUT = 5000;
 
   /**
-   * Ссылка на шаблон
+   * Храним ссылку на структуру шаблона
    * @type {HTMLElement}
    */
   var template = document.querySelector('#picture-template');
@@ -35,7 +35,7 @@
 
   /**
    * Получаем шаблоны картинок
-   *
+   * @method
    * @returns {HTMLElement}
    */
   Photo.prototype.render = function() {
@@ -51,6 +51,7 @@
     this.element.querySelector('.picture-comments').textContent = this._data.comments;
     this.element.querySelector('.picture-likes').textContent = this._data.likes;
 
+    /**@type {Image}*/
     var backgroundImage = new Image();
 
     // Установка таймаута на загрузку изображения. Таймер ожидает 5 секунд
