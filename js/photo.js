@@ -51,6 +51,7 @@
     this.element.querySelector('.picture-comments').textContent = this._data.comments;
     this.element.querySelector('.picture-likes').textContent = this._data.likes.toString();
 
+    /**@type {Image}*/
     var backgroundImage = new Image();
 
     /**

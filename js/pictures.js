@@ -18,13 +18,13 @@
 
   /**
    * Контейнер для хранения фотографии
-   * @type {Element}
+   * @type {HTMLElement}
    */
   var container = document.querySelector('.pictures');
 
   /**
    * Ссылка на родителя всех фильтров
-   * @type {Element}
+   * @type {HTMLElement}
    */
   var filters = document.querySelector('.filters');
 

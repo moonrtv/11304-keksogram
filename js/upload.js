@@ -175,6 +175,7 @@
           resizeForm.classList.remove('invisible');
 
           hideMessage();
+          setTimeout(resizeImg, 1);
         };
 
         fileReader.readAsDataURL(element.files[0]);
