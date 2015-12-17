@@ -50,7 +50,7 @@
    * Храним имя на фильтра по умолчанию
    * @type {string}
    */
-  var activeFilter = 'filter-popular';
+  var activeFilter = localStorage.getItem('activeFilter') || 'filter-popular';
 
   /**
    * Текущая страничка
@@ -189,6 +189,8 @@
     renderPictures(filteredPictures, currentPage, true);
     checkPositionPages();
     activeFilter = selectedFilter;
+    localStorage.setItem('activeFilter', selectedFilter);
+    filters.querySelector('#' + selectedFilter).checked = true;
   }
 
   /**
