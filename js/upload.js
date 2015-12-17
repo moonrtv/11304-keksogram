@@ -8,7 +8,7 @@
 'use strict';
 
 (function() {
-  /** Const */
+  /** @const {string} */
   var ERR_MSG_LEFT = 'Сумма значений полей «слева» и «сторона» не должна быть больше ширины исходного изображения';
   var ERR_MSG_TOP = 'Сумма значений полей «сверху» и «сторона» не должна быть больше высоты исходного изображения';
   var ERR_MSG_NEGATIVE = 'Значение не может быть отрицательным!';
@@ -139,6 +139,9 @@
     return uploadMessage;
   }
 
+  /**
+   * @function hideMessage
+   */
   function hideMessage() {
     uploadMessage.classList.add('invisible');
   }
@@ -149,6 +152,7 @@
    * Resizer с загруженной картинкой, добавляется в форму кадрирования
    * и показывается форма кадрирования.
    * @param {Event} evt
+   * @event change
    */
   uploadForm.addEventListener('change', function(evt) {
     var element = evt.target;
@@ -182,6 +186,10 @@
     }
   });
 
+  /**
+   *  Функция занесения размеров в поля формы
+   *  @function resizeImg
+   */
   function resizeImg() {
     var baseSize = currentResizer.getConstraint();
 
@@ -193,14 +201,14 @@
   /**
    * Обработчик берущий значения смещения и размера кадра
    * из объекта resizer для добавления их в форму
-   * @param {Event} resizerchange
+   * @event resizerchange
    */
   window.addEventListener('resizerchange', resizeImg);
 
   /**
    * Синхронизация изменения значений полей resizeForm с габаритами окна кадрирования
    * и валидация формы.
-   * @param {Event} change
+   * @event change
    */
   resizeForm.addEventListener('change', function() {
     if (resizeFormIsValid()) {
@@ -212,6 +220,7 @@
    * Обработка сброса формы кадрирования. Возвращает в начальное состояние
    * и обновляет фон.
    * @param {Event} evt
+   * @event reset
    */
   resizeForm.addEventListener('reset', function(evt) {
     evt.preventDefault();
@@ -227,6 +236,7 @@
    * Обработка отправки формы кадрирования. Если форма валидна, экспортирует
    * кропнутое изображение в форму добавления фильтра и показывает ее.
    * @param {Event} evt
+   * @event submit
    */
   resizeForm.addEventListener('submit', function(evt) {
     evt.preventDefault();
@@ -242,6 +252,7 @@
   /**
    * Сброс формы фильтра. Показывает форму кадрирования.
    * @param {Event} evt
+   * @event reset
    */
   filterForm.addEventListener('reset', function(evt) {
     evt.preventDefault();
@@ -254,6 +265,7 @@
    * Отправка формы фильтра. Возвращает в начальное состояние, предварительно
    * записав сохраненный фильтр в cookie.
    * @param {Event} evt
+   * @event submit
    */
   filterForm.addEventListener('submit', function(evt) {
     evt.preventDefault();
@@ -267,6 +279,9 @@
 
   /**
    * Создание и позицианирование сообщения.
+   * @param {null|string} tooltip
+   * @return {?HTMLElement} showingTooltip
+   * @function showInfoMsg
    */
   var showInfoMsg = function(tooltip) {
     var checkMsg = document.querySelector('.tooltip');
@@ -299,6 +314,8 @@
 
   /**
    * Удаление сообщения.
+   * @param {?HTMLElement} showingTooltip
+   * @function removeInfoMsg
    */
   var removeInfoMsg = function(showingTooltip) {
     try {
@@ -313,6 +330,8 @@
 
   /**
    * Удаление сообщения по времени.
+   * @param {?HTMLElement} showingTooltip
+   * @function removeInfoMsgTimeout
    */
   var removeInfoMsgTimeout = function(showingTooltip) {
     setTimeout(function() {
@@ -324,12 +343,14 @@
 
   /**
    * Проверка данных на валидность.
+   * @event change
   */
   filterInputs.addEventListener('change', resizeFormIsValid);
 
   /**
    * Функция для проверки данных в форме кадрирования.
    * @return {boolean}
+   * @function resizeFormIsValid
    */
   function resizeFormIsValid() {
     var Msg;
@@ -369,6 +390,8 @@
 
   /**
    * Вычисляем дату cookie.
+   * @return {Date}
+   * @function getDiffDate
    */
   var getDiffDate = function() {
     // Текущие преобразования относительно моего дня рождения
@@ -395,6 +418,10 @@
    */
   filterForm.addEventListener('change', filterFormChange);
 
+  /**
+   * Смена фильтра
+   * @function filterFormChange
+   */
   function filterFormChange() {
     if (!filterMap) {
       // Ленивая инициализация. Объект не создается до тех пор, пока
@@ -429,6 +456,10 @@
   cleanupResizer();
   updateBackground();
 
+  /**
+   * Обновляем данные фильтра
+   * при первой загрузки беря их из кук
+   */
   if (docCookies.getItem('filter')) {
     filterForm['upload-filter'].value = docCookies.getItem('filter');
     filterForm['upload-' + docCookies.getItem('filter')].checked = true;

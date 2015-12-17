@@ -5,7 +5,6 @@
 'use strict';
 
 (function() {
-
   /**
    * Функция-конструктор для галлереи
    * @constructor
@@ -23,6 +22,7 @@
    * Метод показа галлереи
    * Убираем с элемент класс invisible, чтобы показать галлерею
    * и вешаем на кнопку обработчик закрытия
+   * @method
    */
   Gallery.prototype.show = function() {
     this.element.classList.remove('invisible');
@@ -35,6 +35,7 @@
    * Метод скрытия галлереи
    * Вешаем на элемент класс invisible для его скрытия
    * и убираем обраподчик _onCloseClick, чтобы не засорять память
+   * @method
    */
   Gallery.prototype.hide = function() {
     this.element.classList.add('invisible');
@@ -46,6 +47,7 @@
   /**
    * Вешаем обработчик на кнопку закрыть
    * в галлереи
+   * @method
    * @private
    */
   Gallery.prototype._onCloseClick = function() {
@@ -54,6 +56,7 @@
 
   /**
    * Обработчик щелчка по фотографии
+   * @method
    * @private
    */
   Gallery.prototype._onPhotoClick = function() {
@@ -63,6 +66,7 @@
   /**
    * Обработчик на клавишу ESC
    * @param e
+   * @method
    * @private
    */
   Gallery.prototype._onDocumentKeyDown = function(e) {
@@ -73,7 +77,7 @@
 
   /**
    * Расшариваем галлерею
-   * @type {Object}
+   * @type {Gallery}
    */
   window.Gallery = Gallery;
 })();

@@ -66,10 +66,13 @@
 
   /**
    * Создаём объект галлерея
-   * @type {Object}
+   * @type {Gallery}
    */
   var gallery = new Gallery();
 
+  /**
+   * Вызов на прорисовку фотографий
+   */
   getPictures();
 
   // Скрываем фильтры
@@ -97,6 +100,7 @@
 
   /**
    * Проверяем нужно ли прогружать страничку
+   * @function checkPositionPages
    */
   function checkPositionPages() {
     var footerCoordinates = container.getBoundingClientRect();
@@ -110,9 +114,10 @@
 
   /**
    * Отрисовка фотографий
-   * @param {Array} picturesToRender
+   * @param {Array.<Object>} picturesToRender
    * @param {number} pageNumber
    * @param {boolean=} replace
+   * @function renderPictures
    */
   function renderPictures(picturesToRender, pageNumber, replace) {
     if (replace) {
@@ -145,6 +150,7 @@
    * Установка фильтра
    * @param {string} selectedFilter
    * @param {boolean=} force
+   * @function setActiveFilter
    */
   function setActiveFilter(selectedFilter, force) {
 
@@ -187,6 +193,7 @@
 
   /**
    * Загрузка фотографий
+   * @function getPictures
    */
   function getPictures() {
     var xhr = new XMLHttpRequest();
@@ -217,6 +224,9 @@
     xhr.send();
   }
 
+  /**
+   * @function addClassFailure
+   */
   function addClassFailure() {
     container.classList.add('pictures-failure');
   }
@@ -225,6 +235,7 @@
    * Вызываем, если нужно обновить фотографии
    * что-то изменилось (выбрали другой фильтр)
    * @param {Array} loadedPictures
+   * @function updateLoadedPictures
    */
   function updateLoadedPictures(loadedPictures) {
     picturesMas = loadedPictures;

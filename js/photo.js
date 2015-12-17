@@ -35,7 +35,7 @@
 
   /**
    * Получаем шаблоны картинок
-   *
+   * @method
    * @returns {HTMLElement}
    */
   Photo.prototype.render = function() {
@@ -53,9 +53,13 @@
 
     var backgroundImage = new Image();
 
-    // Установка таймаута на загрузку изображения. Таймер ожидает 5 секунд
-    // после которых он уберет src у изображения и добавит класс picture-load-failure,
-    // который показывает, что фотография не прогрузилась.
+    /**
+     * Установка таймаута на загрузку изображения. Таймер ожидает 5 секунд
+     * после которых он уберет src у изображения и добавит класс picture-load-failure,
+     * который показывает, что фотография не прогрузилась.
+     * @type {number}
+     * @function imageLoadTimeout
+     */
     var imageLoadTimeout = setTimeout(function() {
       backgroundImage.src = ''; // Прекращаем загрузку
       this.element.classList.add('picture-load-failure'); // Показываем ошибку
@@ -68,20 +72,33 @@
     this.element.classList.add('picture-load-process');
     var currentImg = this.element.querySelector('img');
 
-    // Функция загрузки
+    /**
+     * Функция загрузки
+     * @event load
+     */
     backgroundImage.addEventListener('load', function() {
       clearTimeout(imageLoadTimeout);
+      // Удаление класс с картинки (loader)
       this.element.classList.remove('picture-load-process');
       this.element.replaceChild(backgroundImage, currentImg);
     }.bind(this));
 
-    // Если изображение не загрузилось (404 ошибка, ошибка сервера)
+    /**
+     * Если изображение не загрузилось (404 ошибка, ошибка сервера)
+     * @event error
+     */
     backgroundImage.addEventListener('error', function() {
+      // Удаление класс с картинки (loader)
       this.element.classList.remove('picture-load-process');
       this.element.classList.add('picture-load-failure');
     }.bind(this));
 
     return this.element;
   };
+
+  /**
+   * Расшариваем фотографии
+   * @type {Photo}
+   */
   window.Photo = Photo;
 })();
