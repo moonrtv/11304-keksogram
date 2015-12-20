@@ -61,7 +61,6 @@
 
   /**
    * Обработчик на клавишу ESC
-   * @param e
    * @method
    * @private
    */
@@ -78,12 +77,13 @@
   };
 
   /**
-   * @method
+   * Установка картинки
    * @param {Array.<Object>} pictures
+   * @method
    */
   Gallery.prototype.setPictures = function(pictures) {
     this._data = pictures;
-    this._maxSlide = this._data.length - 1;
+    this._maxSlide = --this._data.length;
   };
 
   /**
@@ -95,14 +95,12 @@
     /** @type {Object} */
     this._currentSlide = index;
     var picture = this._data[index];
-    this._overlay.querySelector('.gallery-overlay-image').src = picture.getPicture();
+    this.element.querySelector('.gallery-overlay-image').src = picture.getPicture();
     this._likes.textContent = picture.getLikes();
     this._comments.textContent = picture.getComments();
-    if (this._data[this._currentSlide]._liked &&
-      !this._likes.classList.contains(this._likedClass)) {
+    if (this._data[this._currentSlide]._liked && !this._likes.classList.contains(this._likedClass)) {
       this._likes.classList.add(this._likedClass);
-    } else if (!this._data[this._currentSlide]._liked &&
-      this._likes.classList.contains(this._likedClass)) {
+    } else if (!this._data[this._currentSlide]._liked && this._likes.classList.contains(this._likedClass)) {
       this._likes.classList.remove(this._likedClass);
     }
   };
