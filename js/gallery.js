@@ -2,8 +2,6 @@
  * Created by Tink on 16.12.2015.
  */
 
-/* global PhotoPreview: true, inherit: true */
-
 'use strict';
 
 (function() {
@@ -18,26 +16,42 @@
       NEXT_CODE: 39
     };
 
+    /**
+     * Текущая фотография
+     * @type {Number}
+     */
+    this._currentImage = 0;
+
     this.element = document.querySelector('.gallery-overlay');
     this._closeButton = this.element.querySelector('.gallery-overlay-close');
     this._photoImage = this.element.querySelector('.gallery-overlay-image');
-    this._likeButton = this.element.querySelector('.gallery-overlay-controls-like');
-    this._likes = this.element.querySelector('.likes-count');
-    this._comments = this.element.querySelector('.comments-count');
 
     this._onCloseClick = this._onCloseClick.bind(this);
     this._onDocumentKeyDown = this._onDocumentKeyDown.bind(this);
     this._onPhotoClick = this._onPhotoClick.bind(this);
-    this._onLikeClick = this._onLikeClick.bind(this);
-    this._changeLike = this._changeLike.bind(this);
-
-    this._likedClass = 'likes-count-liked';
-
-    this._currentSlide = 0;
-    this._maxSlide = 0;
   }
 
-  inherit(Gallery, PhotoPreview);
+  /**
+   * Метод показа галлереи
+   * @method
+   */
+  Gallery.prototype.show = function() {
+    this.element.classList.remove('invisible');
+    this._closeButton.addEventListener('click', this._onCloseClick);
+    this._photoImage.addEventListener('click', this._onPhotoClick);
+    document.addEventListener('keydown', this._onDocumentKeyDown);
+  };
+
+  /**
+   * Метод скрытия галлереи
+   * @method
+   */
+  Gallery.prototype.hide = function() {
+    this.element.classList.add('invisible');
+    this._closeButton.removeEventListener('click', this._onCloseClick);
+    this._photoImage.removeEventListener('click', this._onPhotoClick);
+    document.removeEventListener('keydown', this._onDocumentKeyDown);
+  };
 
   /**
    * Обработчик кнопки закрытия в галлереи
@@ -54,13 +68,16 @@
    * @private
    */
   Gallery.prototype._onPhotoClick = function() {
-    if (this._currentSlide < this._maxSlide) {
-      this.setCurrentPicture(++this._currentSlide);
+    if (this.pictures[++this._currentImage]) {
+      this.setCurrentPicture(this._currentImage);
+    } else {
+      this._currentImage = 0;
+      this.setCurrentPicture(this._currentImage);
     }
   };
 
   /**
-   * Обработчик на клавишу ESC
+   * Обработчик на клавиши ESC, <-, ->
    * @method
    * @private
    */
@@ -68,67 +85,47 @@
     if (e.keyCode === Gallery.KEY_CODE.ESC_CODE) {
       this.hide();
     }
-    if (e.keyCode === Gallery.KEY_CODE.NEXT_CODE && this._currentSlide > 0) {
-      this.setCurrentPicture(--this._currentSlide);
+    if (e.keyCode === Gallery.KEY_CODE.PREV_CODE) {
+      if (this._currentImage === 0) {
+        this._currentImage = --this.pictures.length;
+        this.setCurrentPicture(this._currentImage);
+      } else {
+        this.setCurrentPicture(--this._currentImage);
+      }
     }
-    if (e.keyCode === Gallery.KEY_CODE.PREV_CODE && this._currentSlide < this._maxSlide) {
-      this.setCurrentPicture(++this._currentSlide);
+    if (e.keyCode === Gallery.KEY_CODE.NEXT_CODE) {
+      if (this._currentImage === --this.pictures.length) {
+        this._currentImage = 0;
+        this.setCurrentPicture(this._currentImage);
+      } else {
+        this.setCurrentPicture(++this._currentImage);
+      }
     }
   };
 
   /**
-   * Установка картинки
+   * Метод для установки массива фотографий
    * @param {Array.<Object>} pictures
    * @method
    */
   Gallery.prototype.setPictures = function(pictures) {
-    this._data = pictures;
-    this._maxSlide = --this._data.length;
+    this.pictures = pictures;
   };
 
   /**
-   * Отрисовка фотографии в галерее (изображение, количество лайков и комментариев)
-   * @method
+   * Метод для установки массива фотографий
    * @param {number} index
+   * @method
    */
   Gallery.prototype.setCurrentPicture = function(index) {
-    /** @type {Object} */
-    this._currentSlide = index;
-    var picture = this._data[index];
-    this.element.querySelector('.gallery-overlay-image').src = picture.getPicture();
-    this._likes.textContent = picture.getLikes();
-    this._comments.textContent = picture.getComments();
-    if (this._data[this._currentSlide]._liked && !this._likes.classList.contains(this._likedClass)) {
-      this._likes.classList.add(this._likedClass);
-    } else if (!this._data[this._currentSlide]._liked && this._likes.classList.contains(this._likedClass)) {
-      this._likes.classList.remove(this._likedClass);
+    if (index <= this.pictures.length - 1) {
+      this._currentImage = index;
+      var picture = this.pictures[this._currentImage];
+      this.element.querySelector('.gallery-overlay-image').src = picture.url;
+      var galleryControls = document.querySelector('.gallery-overlay-controls');
+      galleryControls.querySelector('.likes-count').textContent = picture.likes.toString();
+      galleryControls.querySelector('.comments-count').textContent = picture.comments;
     }
-  };
-
-  /**
-   * Клик по лайкам
-   * @method
-   * @private
-   */
-  Gallery.prototype._onLikeClick = function() {
-    if (this._data[this._currentSlide]._liked) {
-      this._changeLike(true, -1);
-    } else {
-      this._changeLike(false, 1);
-    }
-  };
-
-  /**
-   * Изменение количества лайков
-   * @param {boolean} liked
-   * @param {number} count
-   * @private
-   */
-  Gallery.prototype._changeLike = function(liked, count) {
-    this._data[this._currentSlide]._liked = !liked;
-    this._likes.textContent = +this._likes.textContent + count;
-    this._data[this._currentSlide].setLikes(this._likes.textContent);
-    this._likes.classList.toggle(this._likedClass);
   };
 
   /**

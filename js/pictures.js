@@ -46,12 +46,17 @@
    */
   var filteredPictures = [];
 
+  var availableFilters = [
+    'filter-popular',
+    'filter-new',
+    'filter-discussed'
+  ];
+
   /**
    * Храним имя на фильтра по умолчанию
    * @type {string}
    */
- // var activeFilter = localStorage.getItem('activeFilter') || 'filter-popular';
-  var activeFilter = 'filter-popular';
+  var activeFilter = (availableFilters.indexOf(localStorage.getItem('activeFilter')) <= 0) ? 'filter-popular' : localStorage.getItem('activeFilter');
 
   /**
    * Текущая страничка
@@ -65,8 +70,6 @@
    */
   var scrollTimeout;
 
-  var renderedElements = [];
-
   /**
    * Создаём объект галлерея
    * @type {Gallery}
@@ -78,7 +81,9 @@
    */
   getPictures();
 
-  // Скрываем фильтры
+  /**
+   * Скрываем фильтры
+   */
   filters.classList.add('hidden');
 
   /**
@@ -124,33 +129,22 @@
    */
   function renderPictures(picturesToRender, pageNumber, replace) {
     if (replace) {
-      var el;
-      while (el) {
-        container.removeChild(el.element);
-        el.onClick = null;
-        el.remove();
-        el = renderedElements.shift();
-      }
-      //var renderedPictures = container.querySelectorAll('.picture');
-      //Array.prototype.forEach.call(renderedPictures, function(element) {
-      //  element.onClick = null;
-      //  container.removeChild(element);
-      //  element.remove();
-      //});
+      var renderedPictures = container.querySelectorAll('.picture');
+      Array.prototype.forEach.call(renderedPictures, function(element) {
+        container.removeChild(element);
+      });
     }
 
     var numberFrom = pageNumber * PAGE_SIZE;
     var numberTo = numberFrom + PAGE_SIZE;
     var pagePictures = picturesToRender.slice(numberFrom, numberTo);
 
-    pagePictures.forEach(function(picture, i) {
-      var photo = new Photo();
-      photo.setData(picture);
-      photo.show();
-      var counter = numberFrom + i;
+    pagePictures.forEach(function(picture, index) {
+      var photo = new Photo(picture);
+      photo.render();
 
       photo.onClick = function() {
-        gallery.setCurrentPicture(counter);
+        gallery.setCurrentPicture(index);
         gallery.show();
       };
       fragment.appendChild(photo.element);
@@ -182,11 +176,11 @@
         // по убыванию цены.
         var threeMonth = new Date() - 90 * 24 * 60 * 60 * 1000;
         filteredPictures = filteredPictures.filter(function(picture) {
-          var datePicture = Date.parse(picture.getDate());
+          var datePicture = Date.parse(picture.date);
           return datePicture >= threeMonth;
         }).sort(function(a, b) {
-          var dateB = new Date(b.getDate()).getTime();
-          var dateA = new Date(a.getDate()).getTime();
+          var dateB = new Date(b.date).getTime();
+          var dateA = new Date(a.date).getTime();
           return dateB - dateA;
         });
         break;
@@ -194,17 +188,18 @@
         // Фильтр самые обсуждаемые
         // по убыванию
         filteredPictures = filteredPictures.sort(function(a, b) {
-          return b.getComments() - a.getComments();
+          return b.comments - a.comments;
         });
         break;
     }
+
     currentPage = 0;
-    renderPictures(filteredPictures, currentPage, true);
     gallery.setPictures(filteredPictures);
+    renderPictures(filteredPictures, currentPage, true);
     checkPositionPages();
     activeFilter = selectedFilter;
-   // localStorage.setItem('activeFilter', selectedFilter);
-  //  filters.querySelector('#' + selectedFilter).checked = true;
+    localStorage.setItem('activeFilter', selectedFilter);
+    filters.querySelector('#' + selectedFilter).checked = true;
   }
 
   /**

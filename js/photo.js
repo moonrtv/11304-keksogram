@@ -2,8 +2,6 @@
  * Created by Tink on 16.12.2015.
  */
 
-/* global PhotoBase: true, inherit: true */
-
 'use strict';
 
 (function() {
@@ -33,16 +31,27 @@
      * @const {string}
      */
     Photo.IMG_SIZE = '182px';
-  };
 
-  inherit(Photo, PhotoBase);
+    /**
+     * Клик по фотографии
+     * @private
+     */
+    this._onPhotoClick = function(evt) {
+      evt.preventDefault();
+      if (!this.element.classList.contains('picture-load-failure')) {
+        if (typeof this.onClick === 'function') {
+          this.onClick();
+        }
+      }
+    }.bind(this);
+  };
 
   /**
    * Получаем шаблоны картинок
    * @method
    * @returns {HTMLElement}
    */
-  Photo.prototype.show = function() {
+  Photo.prototype.render = function() {
 
     // Проверка на IE
     if ('content' in template) {
@@ -92,20 +101,9 @@
       this.element.classList.add('picture-load-failure');
     }.bind(this));
 
-    this.element.addEventListener('click', this._onClick);
-  };
+    this.element.addEventListener('click', this._onPhotoClick);
 
-  /**
-   * Клик по фотографии
-   * @param {Event} evt
-   * @private
-   */
-  Photo.prototype._onClick = function(evt) {
-    if (evt.target.classList.contains('picture') && !(this.element.classList.contains('picture-load-failure'))) {
-      if (typeof this.onClick === 'function') {
-        this.onClick();
-      }
-    }
+    return this.element;
   };
 
   /**
@@ -113,7 +111,7 @@
    * @override
    */
   Photo.prototype.hide = function() {
-    this.element.removeEventListener('click', this._onClick);
+    this.element.removeEventListener('click', this._onPhotoClick);
   };
 
   /** @type {?Function} */
