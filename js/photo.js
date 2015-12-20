@@ -2,15 +2,11 @@
  * Created by Tink on 16.12.2015.
  */
 
+/* global PhotoBase: true, inherit: true */
+
 'use strict';
 
 (function() {
-  /**
-   * Размер картинки
-   * @const {string}
-   */
-  var IMG_SIZE = '182px';
-
   /**
    * Время ожидания загрузки фотографии
    * @const {number}
@@ -31,14 +27,22 @@
    */
   var Photo = function(data) {
     this._data = data;
+
+    /**
+     * Размер картинки
+     * @const {string}
+     */
+    Photo.IMG_SIZE = '182px';
   };
+
+  inherit(Photo, PhotoBase);
 
   /**
    * Получаем шаблоны картинок
    * @method
    * @returns {HTMLElement}
    */
-  Photo.prototype.render = function() {
+  Photo.prototype.show = function() {
 
     // Проверка на IE
     if ('content' in template) {
@@ -54,13 +58,7 @@
     /**@type {Image}*/
     var backgroundImage = new Image();
 
-    /**
-     * Установка таймаута на загрузку изображения. Таймер ожидает 5 секунд
-     * после которых он уберет src у изображения и добавит класс picture-load-failure,
-     * который показывает, что фотография не прогрузилась.
-     * @type {number}
-     * @function imageLoadTimeout
-     */
+    /**@type {number}*/
     var imageLoadTimeout = setTimeout(function() {
       backgroundImage.src = ''; // Прекращаем загрузку
       this.element.classList.add('picture-load-failure'); // Показываем ошибку
@@ -68,8 +66,8 @@
 
     // Изменение src у изображения начинает загрузку.
     backgroundImage.src = this._data.url;
-    backgroundImage.style.width = IMG_SIZE;
-    backgroundImage.style.height = IMG_SIZE;
+    backgroundImage.style.width = Photo.IMG_SIZE;
+    backgroundImage.style.height = Photo.IMG_SIZE;
     this.element.classList.add('picture-load-process');
     var currentImg = this.element.querySelector('img');
 
@@ -94,12 +92,32 @@
       this.element.classList.add('picture-load-failure');
     }.bind(this));
 
-    return this.element;
+    this.element.addEventListener('click', this._onClick);
   };
 
   /**
-   * Расшариваем фотографии
-   * @type {Photo}
+   * Клик по фотографии
+   * @param {Event} evt
+   * @private
    */
+  Photo.prototype._onClick = function(evt) {
+    if (evt.target.classList.contains('picture') && !(this.element.classList.contains('picture-load-failure'))) {
+      if (typeof this.onClick === 'function') {
+        this.onClick();
+      }
+    }
+  };
+
+  /**
+   * Удаление обработчика клика по фотографии
+   * @override
+   */
+  Photo.prototype.hide = function() {
+    this.element.removeEventListener('click', this._onClick);
+  };
+
+  /** @type {?Function} */
+  Photo.prototype.onClick = null;
+
   window.Photo = Photo;
 })();

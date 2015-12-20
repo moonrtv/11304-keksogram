@@ -50,7 +50,8 @@
    * Храним имя на фильтра по умолчанию
    * @type {string}
    */
-  var activeFilter = localStorage.getItem('activeFilter') || 'filter-popular';
+ // var activeFilter = localStorage.getItem('activeFilter') || 'filter-popular';
+  var activeFilter = 'filter-popular';
 
   /**
    * Текущая страничка
@@ -63,6 +64,8 @@
    * @type {number}
    */
   var scrollTimeout;
+
+  var renderedElements = [];
 
   /**
    * Создаём объект галлерея
@@ -121,29 +124,39 @@
    */
   function renderPictures(picturesToRender, pageNumber, replace) {
     if (replace) {
-      var picturesAll = document.querySelectorAll('.picture');
-      Array.prototype.forEach.call(picturesAll, function(item) {
-        container.removeChild(item);
-      });
+      var el;
+      while (el) {
+        container.removeChild(el.element);
+        el.onClick = null;
+        el.remove();
+        el = renderedElements.shift();
+      }
+      //var renderedPictures = container.querySelectorAll('.picture');
+      //Array.prototype.forEach.call(renderedPictures, function(element) {
+      //  element.onClick = null;
+      //  container.removeChild(element);
+      //  element.remove();
+      //});
     }
 
     var numberFrom = pageNumber * PAGE_SIZE;
     var numberTo = numberFrom + PAGE_SIZE;
     var pagePictures = picturesToRender.slice(numberFrom, numberTo);
 
-    // Цикл по всем картинкам
-    pagePictures.forEach(function(picture) {
-      var photo = new Photo(picture);
-      var element = photo.render();
-      fragment.appendChild(element);
-      element.addEventListener('click', _onPhotoClick);
-    });
-    container.appendChild(fragment);
-  }
+    pagePictures.forEach(function(picture, i) {
+      var photo = new Photo();
+      photo.setData(picture);
+      photo.show();
+      var counter = numberFrom + i;
 
-  function _onPhotoClick(evt) {
-    evt.preventDefault();
-    gallery.show();
+      photo.onClick = function() {
+        gallery.setCurrentPicture(counter);
+        gallery.show();
+      };
+      fragment.appendChild(photo.element);
+    });
+
+    container.appendChild(fragment);
   }
 
   /**
@@ -169,11 +182,11 @@
         // по убыванию цены.
         var threeMonth = new Date() - 90 * 24 * 60 * 60 * 1000;
         filteredPictures = filteredPictures.filter(function(picture) {
-          var datePicture = Date.parse(picture.date);
+          var datePicture = Date.parse(picture.getDate());
           return datePicture >= threeMonth;
         }).sort(function(a, b) {
-          var dateB = new Date(b.date).getTime();
-          var dateA = new Date(a.date).getTime();
+          var dateB = new Date(b.getDate()).getTime();
+          var dateA = new Date(a.getDate()).getTime();
           return dateB - dateA;
         });
         break;
@@ -181,16 +194,17 @@
         // Фильтр самые обсуждаемые
         // по убыванию
         filteredPictures = filteredPictures.sort(function(a, b) {
-          return b.comments - a.comments;
+          return b.getComments() - a.getComments();
         });
         break;
     }
     currentPage = 0;
     renderPictures(filteredPictures, currentPage, true);
+    gallery.setPictures(filteredPictures);
     checkPositionPages();
     activeFilter = selectedFilter;
-    localStorage.setItem('activeFilter', selectedFilter);
-    filters.querySelector('#' + selectedFilter).checked = true;
+   // localStorage.setItem('activeFilter', selectedFilter);
+  //  filters.querySelector('#' + selectedFilter).checked = true;
   }
 
   /**
