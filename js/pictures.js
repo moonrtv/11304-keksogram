@@ -1,8 +1,17 @@
-/* global Photo: true, Gallery: true */
+/* global requirejs: true, define: true */
 
 'use strict';
 
-(function() {
+requirejs.config({
+  baseUrl: 'js'
+});
+
+define([
+  'photo',
+  'gallery',
+  'resizer',
+  'upload'
+], function(Photo, Gallery) {
   /**
    * Количество элементов на странице
    * @const {number}
@@ -257,4 +266,4 @@
 
   // Показываем фильтры
   filters.classList.remove('hidden');
-})();
+});

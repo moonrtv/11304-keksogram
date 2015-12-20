@@ -2,9 +2,11 @@
  * Created by Tink on 16.12.2015.
  */
 
+/* global define: true */
+
 'use strict';
 
-(function() {
+define(function() {
   /**
    * Функция-конструктор для галлереи
    * @constructor
@@ -132,5 +134,5 @@
    * Расшариваем галлерею
    * @type {Gallery}
    */
-  window.Gallery = Gallery;
-})();
+  return Gallery;
+});

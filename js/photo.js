@@ -2,9 +2,11 @@
  * Created by Tink on 16.12.2015.
  */
 
+/* global define: true */
+
 'use strict';
 
-(function() {
+define(function() {
   /**
    * Время ожидания загрузки фотографии
    * @const {number}
@@ -117,5 +119,5 @@
   /** @type {?Function} */
   Photo.prototype.onClick = null;
 
-  window.Photo = Photo;
-})();
+  return Photo;
+});
