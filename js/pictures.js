@@ -55,6 +55,7 @@ define([
    */
   var filteredPictures = [];
 
+  /** @enum */
   var availableFilters = [
     'filter-popular',
     'filter-new',
@@ -155,6 +156,7 @@ define([
       photo.onClick = function() {
         gallery.setCurrentPicture(index);
         gallery.show();
+        gallery.setHash(photo._data.url);
       };
       fragment.appendChild(photo.element);
     });

@@ -38,14 +38,7 @@ define(function() {
      * Клик по фотографии
      * @private
      */
-    this._onPhotoClick = function(evt) {
-      evt.preventDefault();
-      if (!this.element.classList.contains('picture-load-failure')) {
-        if (typeof this.onClick === 'function') {
-          this.onClick();
-        }
-      }
-    }.bind(this);
+    this._onPhotoClick = this._onPhotoClick.bind(this);
   };
 
   /**
@@ -106,6 +99,15 @@ define(function() {
     this.element.addEventListener('click', this._onPhotoClick);
 
     return this.element;
+  };
+
+  Photo.prototype._onPhotoClick = function(evt) {
+    evt.preventDefault();
+    if (!this.element.classList.contains('picture-load-failure')) {
+      if (typeof this.onClick === 'function') {
+        this.onClick();
+      }
+    }
   };
 
   /**
