@@ -2,11 +2,11 @@
  * Created by Tink on 16.12.2015.
  */
 
-/* global define: true */
+/* global PhotoBase: true, inherit: true */
 
 'use strict';
 
-define(function() {
+(function() {
   /**
    * Время ожидания загрузки фотографии
    * @const {number}
@@ -121,5 +121,5 @@ define(function() {
   /** @type {?Function} */
   Photo.prototype.onClick = null;
 
-  return Photo;
-});
+  window.Photo = Photo;
+})();
