@@ -173,6 +173,7 @@ define(function() {
     }.bind(this), 100);
   };
 
+
   /**
    * @type {Gallery}
    */
