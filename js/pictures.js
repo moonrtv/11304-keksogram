@@ -1,17 +1,8 @@
-/* global requirejs: true, define: true */
+/* global Photo: true, Gallery: true */
 
 'use strict';
 
-requirejs.config({
-  baseUrl: 'js'
-});
-
-define([
-  'photo',
-  'gallery',
-  'resizer',
-  'upload'
-], function(Photo, Gallery) {
+(function() {
   /**
    * Количество элементов на странице
    * @const {number}
@@ -154,7 +145,8 @@ define([
       photo.render();
 
       photo.onClick = function() {
-        gallery.setCurrentPicture(index);
+        var currentPosition = index + numberFrom;
+        gallery.setCurrentPicture(currentPosition);
         gallery.show();
         gallery.setHash(photo._data.url);
       };
@@ -268,4 +260,4 @@ define([
 
   // Показываем фильтры
   filters.classList.remove('hidden');
-});
+})();
