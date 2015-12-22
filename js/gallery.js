@@ -22,6 +22,7 @@
      * @type {Number}
      */
     this._currentImage = 0;
+    this._hash = null;
     this._arrow = Gallery.KEY_CODE.RIGHT_ARROW;
 
     this.element = document.querySelector('.gallery-overlay');
@@ -34,6 +35,10 @@
     this._onDocumentKeyDown = this._onDocumentKeyDown.bind(this);
     this._onPhotoClick = this._onPhotoClick.bind(this);
     this._checkPhoto = this._checkPhoto.bind(this);
+    this._onHashChange = this._onHashChange.bind(this);
+
+    window.addEventListener('load', this._onHashChange);
+    window.addEventListener('hashchange', this._onHashChange);
   }
 
   /**
@@ -56,6 +61,7 @@
     this._closeButton.removeEventListener('click', this._onCloseClick);
     this._photoImage.removeEventListener('click', this._onPhotoClick);
     document.removeEventListener('keydown', this._onDocumentKeyDown);
+    this.setHash();
   };
 
   /**
@@ -78,7 +84,7 @@
     if (index >= this.pictures.length) {
       index = 0;
     }
-    this.setCurrentPicture(index);
+    this.searchCurrentPicture(index);
     this._currentImage = index;
   };
 
@@ -96,17 +102,17 @@
     if (e.keyCode === (Gallery.KEY_CODE.LEFT_ARROW)) {
       this._arrow = Gallery.KEY_CODE.LEFT_ARROW;
       if (index === 0) {
-        this.setCurrentPicture(length);
+        this.searchCurrentPicture(length);
       } else {
-        this.setCurrentPicture(--index);
+        this.searchCurrentPicture(--index);
       }
     }
     if (e.keyCode === (Gallery.KEY_CODE.RIGHT_ARROW)) {
       this._arrow = Gallery.KEY_CODE.RIGHT_ARROW;
       if (index === length) {
-        this.setCurrentPicture(0);
+        this.searchCurrentPicture(0);
       } else {
-        this.setCurrentPicture(++index);
+        this.searchCurrentPicture(++index);
       }
     }
   };
@@ -121,34 +127,85 @@
   };
 
   /**
-   * Метод для установки массива фотографий
+   * Установка текущей фотографии
    * @param {number} index
-   * @method
+   * @method setCurrentPicture
    */
   Gallery.prototype.setCurrentPicture = function(index) {
-    var notFailed = true;
-    while (index < this.pictures.length && index >= 0 && notFailed) {
-      if (!this._checkPhoto(index)) {
-        notFailed = false;
-        this._currentImage = index;
-        var picture = this.pictures[this._currentImage];
-        this._photoImage.src = picture.url;
-        this._photoLikes.textContent = picture.likes.toString();
-        this._photoComments.textContent = picture.comments;
-      } else {
-        notFailed = this._checkPhoto(index);
-        if (this._arrow === Gallery.KEY_CODE.RIGHT_ARROW) {
-          index = ((index + 1) === this.pictures.length) ? 0 : ++index;
-        } else {
-          index = ((index - 1) === 0) ? this.pictures.length : --index;
-        }
-      }
-    }
+    this._currentImage = index;
+    var picture = this.pictures[this._currentImage];
+    this._photoImage.src = picture.url;
+    this._photoLikes.textContent = picture.likes.toString();
+    this._photoComments.textContent = picture.comments;
   };
 
+  /**
+   * Поиск текущей фотографии
+   * @param {number} index
+   * @method searchCurrentPicture
+   */
+  Gallery.prototype.searchCurrentPicture = function(index) {
+    var notFailed = true;
+    if (typeof index === 'number') {
+      while (index < this.pictures.length && index >= 0 && notFailed) {
+        if (!this._checkPhoto(index)) {
+          notFailed = false;
+          this.setHash(this.pictures[index].url);
+        } else {
+          notFailed = this._checkPhoto(index);
+          if (this._arrow === Gallery.KEY_CODE.RIGHT_ARROW) {
+            index = ((index + 1) === this.pictures.length) ? 0 : ++index;
+          } else {
+            index = ((index - 1) === 0) ? this.pictures.length : --index;
+          }
+        }
+      }
+    } else if (typeof index === 'string') {
+      this.pictures.forEach(function(item, i) {
+        if (item.url === index) {
+          this.setCurrentPicture(i);
+        }
+      }.bind(this));
+    }
+
+  };
+
+  /**
+   * Проверка на валидность
+   * @param {number} index
+   * @returns {boolean}
+   * @method _checkPhoto
+   * @private
+   */
   Gallery.prototype._checkPhoto = function(index) {
     var fl = (this.pictures[index].url.match(/.mp4|failed.jpg/g)) ? true : false;
     return fl;
+  };
+
+  /**
+   * Устанавливаем значение хеша
+   * @param hash
+   * @method
+   */
+  Gallery.prototype.setHash = function(hash) {
+    location.hash = hash ? 'photo/' + hash : '';
+  };
+
+  /**
+   * Проверка хеша на странице
+   * @private
+   * @method
+   */
+  Gallery.prototype._onHashChange = function() {
+    setTimeout(function() {
+      this._hash = location.hash.match(/#photo\/(\S+)/);
+      if (this._hash && this._hash[1] !== '') {
+        this.searchCurrentPicture(this._hash[1]);
+        this.show();
+      } else {
+        this.hide();
+      }
+    }.bind(this), 100);
   };
 
   /**

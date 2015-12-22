@@ -148,6 +148,7 @@
         var currentPosition = index + numberFrom;
         gallery.setCurrentPicture(currentPosition);
         gallery.show();
+        gallery.setHash(photo._data.url);
       };
       fragment.appendChild(photo.element);
     });
