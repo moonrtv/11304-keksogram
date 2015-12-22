@@ -144,8 +144,7 @@
       var photo = new Photo(picture);
       photo.render();
 
-      photo.onClick = function(evt) {
-        console.log(picture, evt, numberFrom, numberTo, index);
+      photo.onClick = function() {
         var currentPosition = index + numberFrom;
         gallery.setCurrentPicture(currentPosition);
         gallery.show();

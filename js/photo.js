@@ -2,8 +2,6 @@
  * Created by Tink on 16.12.2015.
  */
 
-/* global PhotoBase: true, inherit: true */
-
 'use strict';
 
 (function() {
