@@ -25,7 +25,6 @@ define(function() {
      */
     this._currentImage = 0;
     this._hash = null;
-    this._arrow = Gallery.KEY_CODE.RIGHT_ARROW;
 
     this.element = document.querySelector('.gallery-overlay');
     this._closeButton = this.element.querySelector('.gallery-overlay-close');
@@ -37,6 +36,7 @@ define(function() {
     this._onDocumentKeyDown = this._onDocumentKeyDown.bind(this);
     this._onPhotoClick = this._onPhotoClick.bind(this);
     this._checkPhoto = this._checkPhoto.bind(this);
+    this._getPositionString = this._getPositionString.bind(this);
     this._onHashChange = this._onHashChange.bind(this);
 
     window.addEventListener('load', this._onHashChange);
@@ -45,7 +45,7 @@ define(function() {
 
   /**
    * Метод показа галлереи
-   * @method
+   * @method show
    */
   Gallery.prototype.show = function() {
     this.element.classList.remove('invisible');
@@ -56,19 +56,20 @@ define(function() {
 
   /**
    * Метод скрытия галлереи
-   * @method
+   * @method hide
    */
   Gallery.prototype.hide = function() {
+    location.hash = '';
     this.element.classList.add('invisible');
     this._closeButton.removeEventListener('click', this._onCloseClick);
     this._photoImage.removeEventListener('click', this._onPhotoClick);
     document.removeEventListener('keydown', this._onDocumentKeyDown);
-    this.setHash();
+    //this.setHash();
   };
 
   /**
    * Обработчик кнопки закрытия в галлереи
-   * @method
+   * @method _onCloseClick
    * @private
    */
   Gallery.prototype._onCloseClick = function() {
@@ -77,52 +78,97 @@ define(function() {
 
   /**
    * Обработчик щелчка по фотографии
-   * @method
+   * @method _onPhotoClick
    * @private
    */
   Gallery.prototype._onPhotoClick = function() {
-    this._arrow = Gallery.KEY_CODE.RIGHT_ARROW;
-    var index = this._currentImage + 1;
-    if (index >= this.pictures.length) {
-      index = 0;
-    }
+    var index = this._moveForward(this._currentImage);
     this.searchCurrentPicture(index);
     this._currentImage = index;
   };
 
   /**
    * Обработчик на клавиши ESC, <-, ->
-   * @method
+   * @method _onDocumentKeyDown
    * @private
    */
   Gallery.prototype._onDocumentKeyDown = function(e) {
     if (e.keyCode === Gallery.KEY_CODE.ESC_CODE) {
       this.hide();
     }
-    var length = this.pictures.length - 1;
-    var index = this._currentImage;
+    var index = this._checkLimitsNumber(this._currentImage);
     if (e.keyCode === (Gallery.KEY_CODE.LEFT_ARROW)) {
-      this._arrow = Gallery.KEY_CODE.LEFT_ARROW;
-      if (index === 0) {
-        this.searchCurrentPicture(length);
-      } else {
-        this.searchCurrentPicture(--index);
-      }
+      index = this._moveBackward(index);
+      this.searchCurrentPicture(index);
     }
     if (e.keyCode === (Gallery.KEY_CODE.RIGHT_ARROW)) {
-      this._arrow = Gallery.KEY_CODE.RIGHT_ARROW;
-      if (index === length) {
-        this.searchCurrentPicture(0);
-      } else {
-        this.searchCurrentPicture(++index);
-      }
+      index = this._moveForward(index);
+      this.searchCurrentPicture(index);
     }
   };
 
   /**
+   * Возвращает следующий индекс
+   * (обходит концы массива и невалидные фотографии)
+   * @param {number} index
+   * @returns {number} index
+   * @method _moveForward
+   * @private
+   */
+  Gallery.prototype._moveForward = function(index) {
+    var notFailed = true;
+
+    while (notFailed) {
+      index = this._checkLimitsNumber(index + 1);
+      notFailed = this._checkPhoto(index);
+    }
+
+    return index;
+  };
+
+  /**
+   * Возвращает предыдущий индекс
+   * (обходит концы массива и невалидные фотографии)
+   * @param {number} index
+   * @returns {number} index
+   * @method _moveBackward
+   * @private
+   */
+  Gallery.prototype._moveBackward = function(index) {
+    var notFailed = true;
+
+    while (notFailed) {
+      index = this._checkLimitsNumber(index - 1);
+      notFailed = this._checkPhoto(index);
+    }
+
+    return index;
+  };
+
+  /**
+   * Метод проверяет индекс на пределы в массиве
+   * @param {number} index
+   * @returns {number} index
+   * @method _checkLimitsNumber
+   * @private
+   */
+  Gallery.prototype._checkLimitsNumber = function(index) {
+    var length = this.pictures.length - 1;
+
+    if (index < 0) {
+      index = length;
+    } else if (index > length) {
+      index = 0;
+    }
+
+    return index;
+  };
+
+
+  /**
    * Метод для установки массива фотографий
    * @param {Array.<Object>} pictures
-   * @method
+   * @method setPictures
    */
   Gallery.prototype.setPictures = function(pictures) {
     this.pictures = pictures;
@@ -147,29 +193,14 @@ define(function() {
    * @method searchCurrentPicture
    */
   Gallery.prototype.searchCurrentPicture = function(index) {
-    var notFailed = true;
     if (typeof index === 'number') {
-      while (index < this.pictures.length && index >= 0 && notFailed) {
-        if (!this._checkPhoto(index)) {
-          notFailed = false;
-          this.setHash(this.pictures[index].url);
-        } else {
-          notFailed = this._checkPhoto(index);
-          if (this._arrow === Gallery.KEY_CODE.RIGHT_ARROW) {
-            index = ((index + 1) === this.pictures.length) ? 0 : ++index;
-          } else {
-            index = ((index - 1) === 0) ? this.pictures.length : --index;
-          }
-        }
-      }
+      this.setHash(this.pictures[index].url);
     } else if (typeof index === 'string') {
-      this.pictures.forEach(function(item, i) {
-        if (item.url === index) {
-          this.setCurrentPicture(i);
-        }
-      }.bind(this));
+      var number = this._getPositionString(index);
+      if (number !== -1) {
+        this.setCurrentPicture(number);
+      }
     }
-
   };
 
   /**
@@ -187,10 +218,30 @@ define(function() {
   /**
    * Устанавливаем значение хеша
    * @param hash
-   * @method
+   * @method setHash
    */
   Gallery.prototype.setHash = function(hash) {
     location.hash = hash ? 'photo/' + hash : '';
+  };
+
+  /**
+   * Метод находит индекс текущей фотографии по url
+   * и возвращает его
+   * @param {string} index
+   * @returns {number}
+   * @method _getPositionString
+   * @private
+   */
+  Gallery.prototype._getPositionString = function(index) {
+    if (typeof this.pictures !== 'undefined') {
+      var length = this.pictures.length;
+      for (var i = 0; i < length; i++) {
+        if (this.pictures[i].url === index) {
+          return i;
+        }
+      }
+    }
+    return -1;
   };
 
   /**
@@ -199,15 +250,17 @@ define(function() {
    * @method
    */
   Gallery.prototype._onHashChange = function() {
-    setTimeout(function() {
-      this._hash = location.hash.match(/#photo\/(\S+)/);
-      if (this._hash && this._hash[1] !== '') {
-        this.searchCurrentPicture(this._hash[1]);
+    this._hash = location.hash.match(/#photo\/(\S+)/);
+
+    if (this._hash && this._hash[1] !== '') {
+      var number = this._getPositionString(this._hash[1]);
+      if (number !== -1) {
+        this.setCurrentPicture(number);
         this.show();
-      } else {
-        this.hide();
       }
-    }.bind(this), 100);
+    } else {
+      this.hide();
+    }
   };
 
   /**

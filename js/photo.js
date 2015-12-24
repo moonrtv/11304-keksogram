@@ -101,6 +101,12 @@ define(function() {
     return this.element;
   };
 
+  /**
+   * Клик на фотографии
+   * @param evt
+   * @method _onPhotoClick
+   * @private
+   */
   Photo.prototype._onPhotoClick = function(evt) {
     evt.preventDefault();
     if (!this.element.classList.contains('picture-load-failure')) {
@@ -123,3 +129,4 @@ define(function() {
 
   return Photo;
 });
+

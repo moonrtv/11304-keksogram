@@ -66,7 +66,8 @@ define([
    * Храним имя на фильтра по умолчанию
    * @type {string}
    */
-  var activeFilter = (availableFilters.indexOf(localStorage.getItem('activeFilter')) <= 0) ? 'filter-popular' : localStorage.getItem('activeFilter');
+  var activeFilter = (availableFilters.indexOf(localStorage.getItem('activeFilter')) <= 0) ?
+    'filter-popular' : localStorage.getItem('activeFilter');
 
   /**
    * Текущая страничка
@@ -145,6 +146,8 @@ define([
       });
     }
 
+    gallery.setPictures(picturesToRender);
+
     var numberFrom = pageNumber * PAGE_SIZE;
     var numberTo = numberFrom + PAGE_SIZE;
     var pagePictures = picturesToRender.slice(numberFrom, numberTo);
@@ -204,11 +207,10 @@ define([
         });
         break;
     }
-
     currentPage = 0;
-    gallery.setPictures(filteredPictures);
     renderPictures(filteredPictures, currentPage, true);
     checkPositionPages();
+
     activeFilter = selectedFilter;
     localStorage.setItem('activeFilter', selectedFilter);
     filters.querySelector('#' + selectedFilter).checked = true;
@@ -228,6 +230,7 @@ define([
       try {
         var loadedPictures = JSON.parse(rawData);
         updateLoadedPictures(loadedPictures);
+        gallery._onHashChange();
       } catch (e) {
         console.log('Призагрузке JSON возникла ошибка.');
         xhr.onerror();
